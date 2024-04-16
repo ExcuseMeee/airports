@@ -65,7 +65,7 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
 
   // use dijkstra
   cleanVisited();
-  std::vector<int> distances(vertices.size(), INT_MAX); // set all distances to infinite
+  std::vector<int> distances(vertices.size(), 2147483647); // set all distances to infinite
   distances[src_ind] = 0; // distance to self is 0
 
   std::vector<int> costs(vertices.size()); // cost to reach each node
@@ -100,7 +100,7 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
   cleanVisited();
 
   // printing path and distance/cost
-  if (distances[dest_ind] == INT_MAX) {
+  if (distances[dest_ind] == 2147483647) {
     std::cout << "Unreachable" << std::endl;
   }
   else {
@@ -135,12 +135,12 @@ void Graph<T>::cleanVisited() {
     v.setVisited(false);
   }
 }
-/*
+
 template<typename T>
 void Graph<T>::Prim_ShortestPath(const Vertex<T>& src){
 
   std::vector<int> parent(vertices.size(), -1); // store contructed MST
-  std::vector<int> key(vertices.size(), INT_MAX); // key values to pick min weight edge
+  std::vector<int> key(vertices.size(), 2147483647); // key values to pick min weight edge
   std::vector<bool> inside(vertices.size(), false); // checks if in MST
 
   //queue to store vertices
@@ -166,7 +166,7 @@ void Graph<T>::Prim_ShortestPath(const Vertex<T>& src){
   }
 
 }
-*/
+
 
 template<typename T>
 void Graph<T>::kruskalMST(Graph<T>& initialGraph) {
@@ -200,4 +200,30 @@ void Graph<T>::kruskalMST(Graph<T>& initialGraph) {
   }
   // construct graph starting from smallest edge
   // ignore edges that connect already connected nodes
+}
+
+template<typename T>
+void Graph<T>::Kruskal_ShortestPath(const Vertex<T>& src) {
+  MinHeap<Edge> edgeHeap; //will store edges from least to greatest destination
+  std::vector<Edge> Kruskal_MST; //will store necessary edges
+  int max_edges = vertices.size() - 1; //max # of edges
+  
+  for (const std::vector<Edge>& adjList : adjacencyLists) { //adds edges to heap
+      for (const Edge& edge : adjList) {
+          edgeHeap.insert(edge);
+      }
+  }
+
+  //some way to stop repeat edges (will implement later today)
+
+  while (!edgeHeap.empty() && Kruskal_MST.size() < max_edges) {
+    Edge edge = edgeHeap.popMin(); //add edge to mst
+  }
+  
+  for (const Edge& edge : Kruskal_MST) {
+    std::cout << vertices[edge.source].getData() << " - ";
+    std::cout << vertices[edge.destination].getData() << " ("; 
+    std::cout << edge.distance << ", ";
+    std::cout << edge.cost << ")" << std::endl;
+  }
 }

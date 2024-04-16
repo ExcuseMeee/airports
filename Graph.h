@@ -19,6 +19,8 @@ public:
   void Prim_ShortestPath(const Vertex<T>& src); //prints prim path
 
   void kruskalMST(Graph<T>& initialGraph);
+  void Kruskal_ShortestPath(const Vertex<T>& src); //prints kruskal path
+
 
 private:
   std::vector<Vertex<T>> vertices;
