@@ -15,6 +15,7 @@ public:
   void print() const;
 
   void findShortestPath(const Vertex<T>& src, const Vertex<T>& dest); // print path, distance, and cost
+  void Prim_ShortestPath(const Vertex<T>& src); //prints prim path
 
 
 private:

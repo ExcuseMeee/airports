@@ -134,3 +134,20 @@ void Graph<T>::cleanVisited() {
     v.setVisited(false);
   }
 }
+
+template<typename T>
+void Graph<T>::Prim_ShortestPath(const Vertex<T>& src){
+  
+  std::vector<int> parent(vertices.size(), -1); // store contructed MST
+  std::vector<int> key(vertices.size(), INT_MAX); // key values to pick min weight edge
+  std::vector<bool> inside(vertices.size(), false); // checks if in MST
+  
+  //queue to store vertices
+  MinHeap<Edge> minHeap;
+
+  int src_ind = getVertexIndex(src);
+  if (src_ind == -1) throw std::string("[Prim_ShortestPath] invalid vertices");
+
+
+
+}
