@@ -17,6 +17,8 @@ public:
   void findShortestPath(const Vertex<T>& src, const Vertex<T>& dest); // print path, distance, and cost
   void Prim_ShortestPath(const Vertex<T>& src); //prints prim path
 
+  void Kruskal_ShortestPath(const Vertex<T>& src); //prints kruskal path
+
 
 private:
   std::vector<Vertex<T>> vertices;
