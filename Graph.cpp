@@ -147,7 +147,21 @@ void Graph<T>::Prim_ShortestPath(const Vertex<T>& src){
 
   int src_ind = getVertexIndex(src);
   if (src_ind == -1) throw std::string("[Prim_ShortestPath] invalid vertices");
+  key[src_ind] = 0;
 
+  // inserts src into queue.
+  minHeap.insert(Edge(src_ind, src_ind, 0, 0));
 
+  while(!minHeap.empty()){
+    //extract min key value
+    Edge minEdge = minHeap.popMin();
+    int value = minEdge.source;
+
+    //set as in the MST
+    inside[value] = true;
+
+    //update key and parent vertices with adjacent
+    
+  }
 
 }
