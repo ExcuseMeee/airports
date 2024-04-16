@@ -43,8 +43,8 @@ void MinHeap<T>::percolateDown(int index) {
     }
     else if (curIndex * 2 + 2 < data.size()) {
       // both kids exist
-      int leftVal = data[curIndex * 2 + 1];
-      int rightVal = data[curIndex * 2 + 2];
+      T leftVal = data[curIndex * 2 + 1];
+      T rightVal = data[curIndex * 2 + 2];
 
       newIndex = leftVal < rightVal ? curIndex * 2 + 1 : curIndex * 2 + 2;
     }

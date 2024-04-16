@@ -12,14 +12,19 @@ public:
 
   void insertVertex(const Vertex<T>& v);
   void addEdge(const Vertex<T>& origin, const Vertex<T>& dest, int distance, int cost, bool directed = false);
-
   void print() const;
+
+  void findShortestPath(const Vertex<T>& src, const Vertex<T>& dest); // print path, distance, and cost
+
 
 private:
   std::vector<Vertex<T>> vertices;
   std::vector<std::vector<Edge>> adjacencyLists;
 
   int getVertexIndex(const Vertex<T>& ver);
+  void cleanVisited();
+
+  
 
 };
 

@@ -2,6 +2,10 @@
 #include <vector>
 #include "Graph.h"
 #include "Vertex.h"
+#include "MinHeap.h"
+#include "MinHeap.cpp"
+#include "Stack.h"
+#include "Stack.cpp"
 
 template<typename T>
 Graph<T>::Graph() {}
@@ -48,5 +52,85 @@ void Graph<T>::print() const {
         << ") ";
     }
     std::cout << std::endl;
+  }
+}
+
+template<typename T>
+void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
+  int src_ind = getVertexIndex(src);
+  int dest_ind = getVertexIndex(dest);
+
+  if (src_ind == -1 || dest_ind == -1) throw std::string("[findShortestPath] invalid vertices");
+
+  // use dijkstra
+  cleanVisited();
+  std::vector<int> distances(vertices.size(), INT_MAX); // set all distances to infinite
+  distances[src_ind] = 0; // distance to self is 0
+
+  std::vector<int> costs(vertices.size()); // cost to reach each node
+  std::vector<int> paths(vertices.size());
+
+  MinHeap<Edge> minHeap;
+  int visited = 0;
+  int curIndex = src_ind;
+  while (visited < vertices.size()) {
+    for (Edge edge : adjacencyLists[curIndex]) {
+      // only care about unvisited neighbors. skip visited neighbors
+      if (vertices[edge.destination].getVisited() == false) {
+        minHeap.insert(edge);
+        int totalDistanceToDest = distances[curIndex] + edge.distance;
+
+        // update values if totalDistanceToDest is desirable (less than the current distance to reach destination)
+        if (totalDistanceToDest < distances[edge.destination]) {
+          distances[edge.destination] = totalDistanceToDest;
+          costs[edge.destination] = edge.cost; // cost to reach destination
+          paths[edge.destination] = curIndex; // we reached destination FROM curIndex
+        }
+      }
+    }
+
+    // once we go through all neighbors, we mark this vertex visited, then choose next smallest edge
+    if (vertices[curIndex].getVisited() == false) visited++; // prevent incrementing if vertex was already visited (this can probably happen)
+    vertices[curIndex].setVisited(true);
+    Edge smallestEdge = minHeap.popMin();
+    curIndex = smallestEdge.destination; // move to vertex of smallest edge
+  }
+
+  cleanVisited();
+
+  // printing path and distance/cost
+  if (distances[dest_ind] == INT_MAX) {
+    std::cout << "Unreachable" << std::endl;
+  }
+  else {
+    // use stack to print paths. paths maps from destination to source, we want source to destination
+    Stack<int> st;
+    int ind = dest_ind;
+    st.push(ind);
+    do {
+      st.push(paths[ind]);
+      ind = paths[ind];
+    } while (ind != src_ind);
+
+    while (!st.empty()) {
+      int i = st.top();
+      std::cout << vertices[i].getData() << "->";
+      st.pop();
+    }
+    std::cout << "(end) ";
+
+
+    std::cout << "Distance: " << distances.at(dest_ind) << ", " << "Cost: " << costs.at(dest_ind) << std::endl;
+
+  }
+
+
+
+}
+
+template<typename T>
+void Graph<T>::cleanVisited() {
+  for (Vertex<T>& v : this->vertices) {
+    v.setVisited(false);
   }
 }
