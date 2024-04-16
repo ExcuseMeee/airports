@@ -9,6 +9,8 @@ public:
   void insert(const T& val);
   T popMin();
 
+  bool empty() const;
+
 private:
   std::vector<T> data;
 

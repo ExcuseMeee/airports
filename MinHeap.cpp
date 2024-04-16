@@ -64,7 +64,7 @@ void MinHeap<T>::percolateDown(int index) {
 
 template<typename T>
 T MinHeap<T>::popMin() {
-  if (this->data.empty()) throw std::string("[popMin] empty heap");
+  if (this->empty()) throw std::string("[popMin] empty heap");
 
   T return_val = data[0]; // min val should be at root for a minheap
 
@@ -75,4 +75,9 @@ T MinHeap<T>::popMin() {
   percolateDown(0); // perc down from root
 
   return return_val;
+}
+
+template<typename T>
+bool MinHeap<T>::empty() const {
+  return this->data.empty();
 }

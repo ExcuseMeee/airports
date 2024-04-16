@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <queue> // delete later
 #include "Graph.h"
 #include "Vertex.h"
 #include "MinHeap.h"
@@ -134,14 +135,14 @@ void Graph<T>::cleanVisited() {
     v.setVisited(false);
   }
 }
-
+/*
 template<typename T>
 void Graph<T>::Prim_ShortestPath(const Vertex<T>& src){
-  
+
   std::vector<int> parent(vertices.size(), -1); // store contructed MST
   std::vector<int> key(vertices.size(), INT_MAX); // key values to pick min weight edge
   std::vector<bool> inside(vertices.size(), false); // checks if in MST
-  
+
   //queue to store vertices
   MinHeap<Edge> minHeap;
 
@@ -161,7 +162,42 @@ void Graph<T>::Prim_ShortestPath(const Vertex<T>& src){
     inside[value] = true;
 
     //update key and parent vertices with adjacent
-    
+
   }
 
+}
+*/
+
+template<typename T>
+void Graph<T>::kruskalMST(Graph<T>& initialGraph) {
+  if (initialGraph.vertices.empty()) throw std::string("[kruskalMST] empty graph");
+  cleanVisited();
+  // sort edges from smallest to largest
+  MinHeap<Edge> sortedEdges;
+  // traverse graph in BFS and add edges
+  int curInd = 0;
+  // need a queue?
+  std::queue<int> toVisit;
+  toVisit.push(0);
+  while (!toVisit.empty()) {
+    int index = toVisit.front();
+    if (vertices[index].getVisited() == false) {
+      for (Edge edge : adjacencyLists[index]) {
+        if (vertices[edge.destination].getVisited() == false) {
+          sortedEdges.insert(edge);
+          toVisit.push(edge.destination);
+
+        }
+      }
+      vertices[index].setVisited(true);
+    }
+    toVisit.pop();
+  }
+
+  while (!sortedEdges.empty()) {
+    Edge e = sortedEdges.popMin();
+    std::cout << e.distance << " ";
+  }
+  // construct graph starting from smallest edge
+  // ignore edges that connect already connected nodes
 }

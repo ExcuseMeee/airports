@@ -39,10 +39,12 @@ int main() {
   airports.addEdge(v4, v5, 740, 0);
 
   // airports.print();
-  airports.findShortestPath(v5, v);
-  airports.findShortestPath(v5, v2);
-  airports.findShortestPath(v5, v4);
-  airports.findShortestPath(v5, v3);
+  // airports.findShortestPath(v5, v);
+  // airports.findShortestPath(v5, v2);
+  // airports.findShortestPath(v5, v4);
+  // airports.findShortestPath(v5, v3);
+
+  airports.kruskalMST(airports);
 
 
   return 0;
