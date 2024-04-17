@@ -1,0 +1,11 @@
+Origin_airport,Destination_airport,Origin_city,Destination_city,Distance,Cost
+ABE,DTW,"Allentown, PA","Detroit, MI",424,374
+ABQ,IAH,"Albuquerque, NM","Houston, TX",744,106
+ACY,BOS,"Atlantic City, NJ","Boston, MA",274,225
+AFW,AUS,"Dallas, TX","Austin, TX",194,123
+AGS,ATL,"Augusta, GA","Atlanta, GA",143,267
+ALB,BOS,"Albany, NY","Boston, MA",145,312
+ALB,DAY,"Albany, NY","Dayton, OH",576,159
+ALB,DTW,"Albany, NY","Detroit, MI",488,376
+ALB,ORD,"Albany, NY","Chicago, IL",723,200
+ALW,YKM,"Walla Walla, WA","Yakima, WA",112,262

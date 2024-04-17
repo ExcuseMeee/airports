@@ -1,8 +1,26 @@
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <sstream>
 #include "Vertex.h"
 #include "Graph.h"
 #include "Graph.cpp"
+
+std::vector<std::string> tokenize(std::string& line, char delimiter = ' ') {
+  // {srcAirport, destAirport, srcCity, srcState, destCity, destState, distance, cost}
+  if (line.empty()) throw std::string("[tokenize] empty line");
+  std::vector<std::string> tokens;
+
+  std::istringstream iss(line);
+  std::string token;
+  while (std::getline(iss, token, delimiter)) {
+    tokens.push_back(token);
+    // std::cout << token << std::endl;
+  }
+
+  return tokens;
+
+}
 
 int main() {
   /*
@@ -47,33 +65,44 @@ int main() {
   airports.kruskalMST(airports);
   */
 
-  Graph<std::string> directed;
+  /*
+   Graph<std::string> directed;
 
-  Vertex<std::string> A("A");
-  Vertex<std::string> B("B");
-  Vertex<std::string> C("C");
-  Vertex<std::string> D("D");
-  Vertex<std::string> E("E");
+   Vertex<std::string> A("A");
+   Vertex<std::string> B("B");
+   Vertex<std::string> C("C");
+   Vertex<std::string> D("D");
+   Vertex<std::string> E("E");
 
-  directed.insertVertex(A);
-  directed.insertVertex(B);
-  directed.insertVertex(C);
-  directed.insertVertex(D);
-  directed.insertVertex(E);
+   directed.insertVertex(A);
+   directed.insertVertex(B);
+   directed.insertVertex(C);
+   directed.insertVertex(D);
+   directed.insertVertex(E);
 
-  directed.addEdge(A, B, 0, 6, true);
-  directed.addEdge(A, D, 0, 9, true);
-  directed.addEdge(B, A, 0, 3, true);
-  directed.addEdge(B, C, 0, 4, true);
-  directed.addEdge(B, E, 0, 8, true);
-  directed.addEdge(C, D, 0, 5, true);
-  directed.addEdge(D, A, 0, 7, true);
-  directed.addEdge(D, E, 0, 9, true);
-  directed.print();
+   directed.addEdge(A, B, 0, 6, true);
+   directed.addEdge(A, D, 0, 9, true);
+   directed.addEdge(B, A, 0, 3, true);
+   directed.addEdge(B, C, 0, 4, true);
+   directed.addEdge(B, E, 0, 8, true);
+   directed.addEdge(C, D, 0, 5, true);
+   directed.addEdge(D, A, 0, 7, true);
+   directed.addEdge(D, E, 0, 9, true);
 
-  Graph<std::string> undirected = directed.createUndirected();
-  undirected.setConsiderCost(true);
-  undirected.print();
+   Graph<std::string> undirected = directed.createUndirected();
+   undirected.setConsiderCost(true);
+   undirected.print();
+   */
+
+   // testing to read CSV
+  std::ifstream inFile("testing.csv");
+  std::string line;
+  while (std::getline(inFile, line)) {
+    std::vector<std::string> tkns = tokenize(line, ',');
+    for (auto t : tkns) std::cout << t << "|";
+    std::cout << "\n";
+  }
+
 
   return 0;
 }
