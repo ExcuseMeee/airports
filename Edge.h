@@ -5,7 +5,7 @@
 class Edge {
 public:
 
-  Edge(int source, int destination, int distance, int cost, bool considerCost = false) {
+  Edge(int source, int destination, int distance, int cost, bool considerCost) {
     this->distance = distance;
     this->cost = cost;
     this->source = source;

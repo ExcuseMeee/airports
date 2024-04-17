@@ -11,10 +11,13 @@ public:
   Graph();
 
   void insertVertex(const Vertex<T>& v);
-  void addEdge(const Vertex<T>& origin, const Vertex<T>& dest, int distance, int cost, bool directed = false);
+  // EDGE IS DIRECTED BY DEFAULT. CONSIDERS ONLY DISTANCE BY DEFAULT
+  void addEdge(const Vertex<T>& origin, const Vertex<T>& dest, int distance, int cost, bool directed = true, bool considerCost = false); 
   void print() const;
 
   void findShortestPath(const Vertex<T>& src, const Vertex<T>& dest); // print path, distance, and cost
+
+  Graph<T> createUndirected(); // create undirected graph using this graph as basis
 
   void Prim_ShortestPath(const Vertex<T>& src); //prints prim path
 

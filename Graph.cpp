@@ -27,16 +27,16 @@ void Graph<T>::insertVertex(const Vertex<T>& v) {
 }
 
 template<typename T>
-void Graph<T>::addEdge(const Vertex<T>& origin, const Vertex<T>& dest, int distance, int cost, bool directed) {
+void Graph<T>::addEdge(const Vertex<T>& origin, const Vertex<T>& dest, int distance, int cost, bool directed, bool considerCost) {
   int origin_ind = getVertexIndex(origin);
   int dest_ind = getVertexIndex(dest);
 
   if (origin_ind == -1 || dest_ind == -1) throw std::string("[addEdge] invalid edges");
 
-  adjacencyLists[origin_ind].push_back(Edge(origin_ind, dest_ind, distance, cost));
+  adjacencyLists[origin_ind].push_back(Edge(origin_ind, dest_ind, distance, cost, considerCost));
 
   if (!directed && origin_ind != dest_ind)
-    adjacencyLists[dest_ind].push_back(Edge(dest_ind, origin_ind, distance, cost));
+    adjacencyLists[dest_ind].push_back(Edge(dest_ind, origin_ind, distance, cost, considerCost));
 
 }
 
@@ -137,7 +137,7 @@ void Graph<T>::cleanVisited() {
 }
 
 template<typename T>
-void Graph<T>::Prim_ShortestPath(const Vertex<T>& src){
+void Graph<T>::Prim_ShortestPath(const Vertex<T>& src) {
 
   std::vector<int> parent(vertices.size(), -1); // store contructed MST
   std::vector<int> key(vertices.size(), 2147483647); // key values to pick min weight edge
@@ -153,7 +153,7 @@ void Graph<T>::Prim_ShortestPath(const Vertex<T>& src){
   // inserts src into queue.
   minHeap.insert(Edge(src_ind, src_ind, 0, 0));
 
-  while(!minHeap.empty()){
+  while (!minHeap.empty()) {
     //extract min key value
     Edge minEdge = minHeap.popMin();
     int value = minEdge.source;
@@ -207,11 +207,11 @@ void Graph<T>::Kruskal_ShortestPath(const Vertex<T>& src) {
   MinHeap<Edge> edgeHeap; //will store edges from least to greatest destination
   std::vector<Edge> Kruskal_MST; //will store necessary edges
   int max_edges = vertices.size() - 1; //max # of edges
-  
+
   for (const std::vector<Edge>& adjList : adjacencyLists) { //adds edges to heap
-      for (const Edge& edge : adjList) {
-          edgeHeap.insert(edge);
-      }
+    for (const Edge& edge : adjList) {
+      edgeHeap.insert(edge);
+    }
   }
 
   //some way to stop repeat edges (will implement later today)
@@ -219,11 +219,39 @@ void Graph<T>::Kruskal_ShortestPath(const Vertex<T>& src) {
   while (!edgeHeap.empty() && Kruskal_MST.size() < max_edges) {
     Edge edge = edgeHeap.popMin(); //add edge to mst
   }
-  
+
   for (const Edge& edge : Kruskal_MST) {
     std::cout << vertices[edge.source].getData() << " - ";
-    std::cout << vertices[edge.destination].getData() << " ("; 
+    std::cout << vertices[edge.destination].getData() << " (";
     std::cout << edge.distance << ", ";
     std::cout << edge.cost << ")" << std::endl;
   }
+}
+
+template<typename T>
+Graph<T> Graph<T>::createUndirected() {
+  Graph<T> undirected;
+  // go through all adjacency lists
+  for (int rowIndex = 0; rowIndex < this->adjacencyLists.size(); rowIndex++) {
+    Vertex<T> srcVertex = this->vertices[rowIndex];
+    undirected.insertVertex(srcVertex);
+    // go through adjacency list of srcVertex
+    for (Edge srcVertex_edge : this->adjacencyLists[rowIndex]) {
+      if (srcVertex_edge.destination < rowIndex) continue; // if destination vertex has already been resolved, move on
+      Vertex<T> destVertex = this->vertices[srcVertex_edge.destination];
+      undirected.insertVertex(destVertex);
+      // check if destVer points back to srcVer... if so choose smallest cost one
+      int minCost = srcVertex_edge.cost;
+      for (Edge destVertex_edge : this->adjacencyLists[srcVertex_edge.destination]) {
+        if (destVertex_edge.destination == rowIndex) {
+          // check if this edge is less than current
+          if (destVertex_edge.cost < minCost) minCost = destVertex_edge.cost;
+        }
+
+      }
+      undirected.addEdge(srcVertex, destVertex, 0, minCost, false, true); // add undirected edge that considers cost
+    }
+  }
+  return undirected;
+
 }
