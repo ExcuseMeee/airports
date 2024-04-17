@@ -69,11 +69,11 @@ int main() {
   directed.addEdge(C, D, 0, 5, true);
   directed.addEdge(D, A, 0, 7, true);
   directed.addEdge(D, E, 0, 9, true);
-
   directed.print();
 
   Graph<std::string> undirected = directed.createUndirected();
-
+  undirected.setConsiderCost(true);
   undirected.print();
+
   return 0;
 }

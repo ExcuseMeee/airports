@@ -48,8 +48,8 @@ void Graph<T>::print() const {
     for (Edge e : this->adjacencyLists[i]) {
       std::cout << "("
         << vertices[e.destination].getData() << ", "
-        << "dist: " << e.distance << ", "
-        << "cost: " << e.cost
+        << "dist" << (e.considerCost ? "[]" : "[X]") << ": " << e.distance << ", "
+        << "cost" << (e.considerCost ? "[X]" : "[]") << ": " << e.cost
         << ") ";
     }
     std::cout << std::endl;
@@ -231,27 +231,41 @@ void Graph<T>::Kruskal_ShortestPath(const Vertex<T>& src) {
 template<typename T>
 Graph<T> Graph<T>::createUndirected() {
   Graph<T> undirected;
+
   // go through all adjacency lists
   for (int rowIndex = 0; rowIndex < this->adjacencyLists.size(); rowIndex++) {
     Vertex<T> srcVertex = this->vertices[rowIndex];
     undirected.insertVertex(srcVertex);
+
     // go through adjacency list of srcVertex
-    for (Edge srcVertex_edge : this->adjacencyLists[rowIndex]) {
+    for (const Edge& srcVertex_edge : this->adjacencyLists[rowIndex]) {
       if (srcVertex_edge.destination < rowIndex) continue; // if destination vertex has already been resolved, move on
       Vertex<T> destVertex = this->vertices[srcVertex_edge.destination];
       undirected.insertVertex(destVertex);
       // check if destVer points back to srcVer... if so choose smallest cost one
       int minCost = srcVertex_edge.cost;
-      for (Edge destVertex_edge : this->adjacencyLists[srcVertex_edge.destination]) {
+      for (const Edge& destVertex_edge : this->adjacencyLists[srcVertex_edge.destination]) {
         if (destVertex_edge.destination == rowIndex) {
           // check if this edge is less than current
           if (destVertex_edge.cost < minCost) minCost = destVertex_edge.cost;
+          break;
         }
 
       }
-      undirected.addEdge(srcVertex, destVertex, 0, minCost, false, true); // add undirected edge that considers cost
+
+      undirected.addEdge(srcVertex, destVertex, 0, minCost, false); // add undirected edge
+    }
+
+  }
+
+  return undirected;
+}
+
+template<typename T>
+void Graph<T>::setConsiderCost(bool considerCost) {
+  for (std::vector<Edge>& adjList : this->adjacencyLists) {
+    for (Edge& edge : adjList) {
+      edge.considerCost = considerCost;
     }
   }
-  return undirected;
-
 }

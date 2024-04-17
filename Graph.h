@@ -24,6 +24,8 @@ public:
   void kruskalMST(Graph<T>& initialGraph);
   void Kruskal_ShortestPath(const Vertex<T>& src); //prints kruskal path
 
+  void setConsiderCost(bool considerCost); // set all edges to considerCost (set to true or false)
+
 
 private:
   std::vector<Vertex<T>> vertices;
