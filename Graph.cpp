@@ -94,8 +94,10 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
 
     // once we go through all neighbors, we mark this vertex visited, then choose next smallest edge
     vertices[curIndex].setVisited(true);
-    Edge smallestEdge = minHeap.popMin();
-    curIndex = smallestEdge.destination; // move to vertex of smallest edge
+    if (!minHeap.empty()) { // this gets rid of some bugs... i hope it doesn't cause any itself (probably does)
+      Edge smallestEdge = minHeap.popMin();
+      curIndex = smallestEdge.destination; // move to vertex of smallest edge
+    }
     visited++;
   }
 
@@ -290,4 +292,43 @@ bool Graph<T>::areNeighbors(const Vertex<T>& src, const Vertex<T>& dest) {
   }
 
   return false;
+}
+
+template<typename T>
+void Graph<T>::directConnections() {
+  std::cout << "[directConnections] ";
+  std::vector<int> connections(this->vertices.size()); // stores # of connections for each vertex
+
+  // loop through entire adjList
+  for (int srcIndex = 0; srcIndex < this->adjacencyLists.size(); srcIndex++) {
+    connections[srcIndex] += adjacencyLists[srcIndex].size(); // size of adj list is how many outbound connections you have
+    for (Edge edge : adjacencyLists[srcIndex]) {
+      int neighborIndex = edge.destination; // inbound connections. increment the destination index
+      connections[neighborIndex]++;
+    }
+  }
+
+  // all this to print in descending....
+  MinHeap<Edge> minHeap;
+
+  for (int i = 0; i < connections.size(); i++) {
+    Edge fakeEdge = Edge(i, -1, connections[i], -1, false); // using Edge as a key value pair
+    minHeap.insert(fakeEdge);
+  }
+
+  Stack<Edge> s;
+
+  while (!minHeap.empty()) {
+    s.push(minHeap.popMin());
+  }
+
+  while (!s.empty()) {
+    Edge fakeEdge = s.top();
+    std::cout << vertices[fakeEdge.source].getData();
+    std::cout << ": " << fakeEdge.distance << ", ";
+    s.pop();
+  }
+  std::cout << std::endl;
+
+
 }

@@ -37,6 +37,7 @@ int main() {
 
     airports.print();
     airports.findShortestPath(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")));
+    airports.directConnections();
 
     Graph<AirportData> undirected = airports.createUndirected(); // undirected graph considers COST by default
     undirected.print();

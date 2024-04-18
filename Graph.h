@@ -19,6 +19,7 @@ public:
 
   // create undirected graph using this graph as basis. graph chooses edges with least COST. created graph considers COST by default.
   Graph<T> createUndirected(); 
+  void directConnections(); // display direct connections (to and from) each vertex
 
   void Prim_ShortestPath(const Vertex<T>& src); //prints prim path
 
