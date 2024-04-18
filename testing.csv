@@ -1,9 +1,11 @@
 Origin_airport,Destination_airport,Origin_city,Destination_city,Distance,Cost
 A,B,"Src, FL", "Dest, FL",6,16
-A,D,"Src, FL", "Dest, FL",9,19
+A,C,"Src, FL", "Dest, FL",10,1
+A,D,"Src, FL", "Dest, FL",9,2
 B,A,"Src, FL", "Dest, FL",3,13
-B,C,"Src, FL", "Dest, FL",4,14
+B,C,"Src, FL", "Dest, FL",4,5
 B,E,"Src, FL", "Dest, FL",8,18
-C,D,"Src, FL", "Dest, FL",5,15
-D,A,"Src, FL", "Dest, FL",7,17
-D,E,"Src, FL", "Dest, FL",9,19
+C,D,"Src, FL", "Dest, FL",5,10
+D,A,"Src, FL", "Dest, FL",7,3
+D,E,"Src, FL", "Dest, FL",9,7
+E,C,"Src, FL", "Dest, FL",8,4

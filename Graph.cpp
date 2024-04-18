@@ -80,13 +80,15 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
       if (vertices[edge.destination].getVisited() == false) {
         minHeap.insert(edge);
         int totalDistanceToDest = distances[curIndex] + edge.distance;
+        int totalCostToDest = costs[curIndex] + edge.cost;
 
         // update values if totalDistanceToDest is desirable (less than the current distance to reach destination)
         if (totalDistanceToDest < distances[edge.destination]) {
           distances[edge.destination] = totalDistanceToDest;
-          costs[edge.destination] = edge.cost; // cost to reach destination
+          costs[edge.destination] = totalCostToDest; // cost to reach destination
           paths[edge.destination] = curIndex; // we reached destination FROM curIndex
         }
+
       }
     }
 
@@ -99,6 +101,7 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
 
   cleanVisited();
 
+  std::cout << "[findShortestPath] ";
   // printing path and distance/cost
   if (distances[dest_ind] == 2147483647) {
     std::cout << "Unreachable" << std::endl;
@@ -124,7 +127,6 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
     std::cout << "Distance: " << distances.at(dest_ind) << ", " << "Cost: " << costs.at(dest_ind) << std::endl;
 
   }
-
 
 
 }

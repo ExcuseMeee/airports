@@ -32,12 +32,24 @@ int main() {
     }
 
   }
+  try
+  {
 
-  airports.print();
+    airports.print();
+    airports.findShortestPath(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")));
 
-  Graph<AirportData> undirected = airports.createUndirected(); // undirected graph considers COST by default
+    Graph<AirportData> undirected = airports.createUndirected(); // undirected graph considers COST by default
 
-  undirected.print();
+    undirected.print();
+
+
+  }
+  catch (const std::string& e)
+  {
+    std::cout << e << '\n';
+  }
+
+
 
 
 
