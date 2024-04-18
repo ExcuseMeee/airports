@@ -4,9 +4,7 @@
 template<typename T>
 class Vertex {
 public:
-  Vertex(const T& data = T()) {
-    this->data = data;
-  }
+  Vertex(const T& data = T()) : data(data), visited(false) {}
   const T& getData() const {
     return this->data;
   }

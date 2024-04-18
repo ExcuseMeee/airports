@@ -232,30 +232,36 @@ template<typename T>
 Graph<T> Graph<T>::createUndirected() {
   Graph<T> undirected;
 
-  // go through all adjacency lists
+  for (const Vertex<T>& v : this->vertices) {
+    undirected.vertices.push_back(v);
+    undirected.adjacencyLists.push_back(std::vector<Edge>());
+  }
+
+  // go through all connections
   for (int rowIndex = 0; rowIndex < this->adjacencyLists.size(); rowIndex++) {
     Vertex<T> srcVertex = this->vertices[rowIndex];
-    undirected.insertVertex(srcVertex);
 
-    // go through adjacency list of srcVertex
-    for (const Edge& srcVertex_edge : this->adjacencyLists[rowIndex]) {
-      if (srcVertex_edge.destination < rowIndex) continue; // if destination vertex has already been resolved, move on
-      Vertex<T> destVertex = this->vertices[srcVertex_edge.destination];
-      undirected.insertVertex(destVertex);
-      // check if destVer points back to srcVer... if so choose smallest cost one
-      int minCost = srcVertex_edge.cost;
-      for (const Edge& destVertex_edge : this->adjacencyLists[srcVertex_edge.destination]) {
+    // go through adj list of srcVertex
+    for (const Edge& edge : this->adjacencyLists[rowIndex]) {
+      Vertex<T> destVertex = this->vertices[edge.destination];
+      if (undirected.areNeighbors(srcVertex, destVertex)) continue; // if already connected, move on
+
+      // check if destVertex points back to srcVertex
+      int minCost = edge.cost;
+      int dist = edge.distance;
+      for (const Edge& destVertex_edge : this->adjacencyLists[edge.destination]) {
+        // destVertex points back to srcVertex
         if (destVertex_edge.destination == rowIndex) {
-          // check if this edge is less than current
-          if (destVertex_edge.cost < minCost) minCost = destVertex_edge.cost;
+          // choose this connection if cost is less
+          if (destVertex_edge.cost < minCost) {
+            minCost = destVertex_edge.cost;
+            dist = destVertex_edge.distance;
+          }
           break;
         }
-
       }
-
-      undirected.addEdge(srcVertex, destVertex, 0, minCost, false); // add undirected edge
+      undirected.addEdge(srcVertex, destVertex, dist, minCost, false, true); // create undirected edge, consider cost
     }
-
   }
 
   return undirected;
@@ -268,4 +274,18 @@ void Graph<T>::setConsiderCost(bool considerCost) {
       edge.considerCost = considerCost;
     }
   }
+}
+
+template<typename T>
+bool Graph<T>::areNeighbors(const Vertex<T>& src, const Vertex<T>& dest) {
+  int srcIndex = getVertexIndex(src);
+  int destIndex = getVertexIndex(dest);
+  if (srcIndex == -1 || destIndex == -1) throw std::string("[areNeighbors] invalid vertices");
+
+  // check src's adj list for dest
+  for (const Edge& edge : this->adjacencyLists[srcIndex]) {
+    if (edge.destination == destIndex) return true;
+  }
+
+  return false;
 }

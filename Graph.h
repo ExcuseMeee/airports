@@ -17,7 +17,8 @@ public:
 
   void findShortestPath(const Vertex<T>& src, const Vertex<T>& dest); // print path, distance, and cost
 
-  Graph<T> createUndirected(); // create undirected graph using this graph as basis
+  // create undirected graph using this graph as basis. graph chooses edges with least COST. created graph considers COST by default.
+  Graph<T> createUndirected(); 
 
   void Prim_ShortestPath(const Vertex<T>& src); //prints prim path
 
@@ -33,6 +34,8 @@ private:
 
   int getVertexIndex(const Vertex<T>& ver);
   void cleanVisited();
+
+  bool areNeighbors(const Vertex<T>& src, const Vertex<T>& dest);
 
   
 
