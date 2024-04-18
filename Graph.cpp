@@ -93,10 +93,10 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
     }
 
     // once we go through all neighbors, we mark this vertex visited, then choose next smallest edge
-    if (vertices[curIndex].getVisited() == false) visited++; // prevent incrementing if vertex was already visited (this can probably happen)
     vertices[curIndex].setVisited(true);
     Edge smallestEdge = minHeap.popMin();
     curIndex = smallestEdge.destination; // move to vertex of smallest edge
+    visited++;
   }
 
   cleanVisited();
