@@ -7,6 +7,8 @@
 #include "MinHeap.cpp"
 #include "Stack.h"
 #include "Stack.cpp"
+#include "UnionFind.h"
+
 
 template<typename T>
 Graph<T>::Graph() {}
@@ -172,45 +174,46 @@ void Graph<T>::Prim_ShortestPath(const Vertex<T>& src) {
 }
 
 
-template<typename T>
-void Graph<T>::kruskalMST(Graph<T>& initialGraph) {
-  if (initialGraph.vertices.empty()) throw std::string("[kruskalMST] empty graph");
-  cleanVisited();
-  // sort edges from smallest to largest
-  MinHeap<Edge> sortedEdges;
-  // traverse graph in BFS and add edges
-  int curInd = 0;
-  // need a queue?
-  std::queue<int> toVisit;
-  toVisit.push(0);
-  while (!toVisit.empty()) {
-    int index = toVisit.front();
-    if (vertices[index].getVisited() == false) {
-      for (Edge edge : adjacencyLists[index]) {
-        if (vertices[edge.destination].getVisited() == false) {
-          sortedEdges.insert(edge);
-          toVisit.push(edge.destination);
+// template<typename T>
+// void Graph<T>::kruskalMST(Graph<T>& initialGraph) {
+//   if (initialGraph.vertices.empty()) throw std::string("[kruskalMST] empty graph");
+//   cleanVisited();
+//   // sort edges from smallest to largest
+//   MinHeap<Edge> sortedEdges;
+//   // traverse graph in BFS and add edges
+//   //int curInd = 0;
+//   // need a queue?
+//   std::queue<int> toVisit;
+//   toVisit.push(0);
+//   while (!toVisit.empty()) {
+//     int index = toVisit.front();
+//     if (vertices[index].getVisited() == false) {
+//       for (Edge edge : adjacencyLists[index]) {
+//         if (vertices[edge.destination].getVisited() == false) {
+//           sortedEdges.insert(edge);
+//           toVisit.push(edge.destination);
 
-        }
-      }
-      vertices[index].setVisited(true);
-    }
-    toVisit.pop();
-  }
+//         }
+//       }
+//       vertices[index].setVisited(true);
+//     }
+//     toVisit.pop();
+//   }
 
-  while (!sortedEdges.empty()) {
-    Edge e = sortedEdges.popMin();
-    std::cout << e.distance << " ";
-  }
+//   while (!sortedEdges.empty()) {
+//     Edge e = sortedEdges.popMin();
+//     std::cout << e.distance << " ";
+//   }
   // construct graph starting from smallest edge
   // ignore edges that connect already connected nodes
-}
+// }
 
 template<typename T>
-void Graph<T>::Kruskal_ShortestPath(const Vertex<T>& src) {
+void Graph<T>::kruskalMST() {
   MinHeap<Edge> edgeHeap; //will store edges from least to greatest destination
   std::vector<Edge> Kruskal_MST; //will store necessary edges
   int max_edges = vertices.size() - 1; //max # of edges
+  int total_edge_cost = 0;
 
   for (const std::vector<Edge>& adjList : adjacencyLists) { //adds edges to heap
     for (const Edge& edge : adjList) {
@@ -218,18 +221,26 @@ void Graph<T>::Kruskal_ShortestPath(const Vertex<T>& src) {
     }
   }
 
-  //some way to stop repeat edges (will implement later today)
+  UnionFind uf(vertices.size());
 
   while (!edgeHeap.empty() && Kruskal_MST.size() < max_edges) {
-    Edge edge = edgeHeap.popMin(); //add edge to mst
+    Edge edge = edgeHeap.popMin(); //add edge to MST
+    
+    if (uf.find(edge.source) != uf.find(edge.destination)) { //check for cycles
+        uf.unionFunction(edge.source, edge.destination);
+        Kruskal_MST.push_back(edge);
+    }
   }
 
   for (const Edge& edge : Kruskal_MST) {
+    std::cout << "[Kruskal MST] ";
     std::cout << vertices[edge.source].getData() << " - ";
     std::cout << vertices[edge.destination].getData() << " (";
     std::cout << edge.distance << ", ";
     std::cout << edge.cost << ")" << std::endl;
+    total_edge_cost += edge.cost;
   }
+  std::cout << "[Kruskal MST] Total Edge Cost " << total_edge_cost << std::endl;
 }
 
 template<typename T>
