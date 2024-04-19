@@ -23,8 +23,7 @@ public:
 
   void Prim_ShortestPath(); //prints prim path
 
-  //void kruskalMST(Graph<T>& initialGraph);
-  void kruskalMST(); //prints kruskal MST
+  Graph<T> kruskalMST(); //prints kruskal MST
 
   void setConsiderCost(bool considerCost); // set all edges to considerCost (set to true or false)
 
