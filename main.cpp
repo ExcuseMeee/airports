@@ -6,6 +6,7 @@
 #include "Graph.h"
 #include "Graph.cpp"
 #include "AirportData.h"
+#include "UnionFind.h"
 
 // should return {srcAirport, destAirport, srcCity, srcState, destCity, destState, distance, cost}
 std::vector<std::string> tokenize(std::string& line, char delimiter = ' ');
@@ -42,6 +43,7 @@ int main() {
     Graph<AirportData> undirected = airports.createUndirected(); // undirected graph considers COST by default
     undirected.print();
     undirected.findShortestPath(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")));
+    undirected.kruskalMST();
 
 
   }
