@@ -183,13 +183,13 @@ void Graph<T>::Prim_ShortestPath() {
     }
   }
   //print
-  cout << "[Prim's MST]" << endl;
+  std::cout << "[Prim's MST]" << std::endl;
     for (int i = 0; i < vertices.size(); ++i) {
         for (const Edge& edge : prim_graph.adjacencyLists[i]) {
-            cout << "[Prim's MST] " << vertices[edge.source].getData() << " - "
+            std::cout << "[Prim's MST] " << vertices[edge.source].getData() << " - "
                  << vertices[edge.destination].getData() << " ("
                  << edge.distance << ", "
-                 << edge.cost << ")" << endl;
+                 << edge.cost << ")" << std::endl;
         }
     }
 }
