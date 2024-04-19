@@ -211,9 +211,11 @@ void Graph<T>::Prim_ShortestPath(const Vertex<T>& src) {
 template<typename T>
 void Graph<T>::kruskalMST() {
   MinHeap<Edge> edgeHeap; //will store edges from least to greatest destination
-  std::vector<Edge> Kruskal_MST; //will store necessary edges
+  std::vector<Edge> MST_final_edges; //will store the final edges
+  Graph<T> Kruskal_MST_Graph; //will store MST
   int max_edges = vertices.size() - 1; //max # of edges
   int total_edge_cost = 0;
+  int total_edges = 0;
 
   for (const std::vector<Edge>& adjList : adjacencyLists) { //adds edges to heap
     for (const Edge& edge : adjList) {
@@ -221,25 +223,31 @@ void Graph<T>::kruskalMST() {
     }
   }
 
+  for (const Vertex<T>& vertex : vertices) { //adds vertices to graph
+    Kruskal_MST_Graph.insertVertex(vertex);
+  }
+
   UnionFind uf(vertices.size());
 
-  while (!edgeHeap.empty() && Kruskal_MST.size() < max_edges) {
+  while (!edgeHeap.empty() && total_edges < max_edges) {
     Edge edge = edgeHeap.popMin(); //add edge to MST
     
     if (uf.find(edge.source) != uf.find(edge.destination)) { //check for cycles
-        uf.unionFunction(edge.source, edge.destination);
-        Kruskal_MST.push_back(edge);
+      uf.unionFunction(edge.source, edge.destination);
+      MST_final_edges.push_back(edge); 
+      Kruskal_MST_Graph.addEdge(vertices[edge.source], vertices[edge.destination], edge.distance, edge.cost, false, edge.considerCost);
+      total_edge_cost += edge.cost;
+      total_edges++;
+  }
+  }
+    for (const Edge& edge : MST_final_edges) {
+      std::cout << "[Kruskal MST] ";
+      std::cout << vertices[edge.source].getData() << " - ";
+      std::cout << vertices[edge.destination].getData() << " (";
+      std::cout << edge.distance << ", ";
+      std::cout << edge.cost << ")" << std::endl;
     }
-  }
 
-  for (const Edge& edge : Kruskal_MST) {
-    std::cout << "[Kruskal MST] ";
-    std::cout << vertices[edge.source].getData() << " - ";
-    std::cout << vertices[edge.destination].getData() << " (";
-    std::cout << edge.distance << ", ";
-    std::cout << edge.cost << ")" << std::endl;
-    total_edge_cost += edge.cost;
-  }
   std::cout << "[Kruskal MST] Total Edge Cost " << total_edge_cost << std::endl;
 }
 
