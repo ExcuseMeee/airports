@@ -36,14 +36,19 @@ int main() {
   try
   {
 
-    airports.print();
-    airports.findShortestPath(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")));
-    airports.directConnections();
+    // airports.print();
+    // airports.findShortestPath(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")));
+    // airports.directConnections();
+
+    puts("");
 
     Graph<AirportData> undirected = airports.createUndirected(); // undirected graph considers COST by default
     undirected.print();
-    undirected.findShortestPath(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")));
-    undirected.kruskalMST();
+    // undirected.findShortestPath(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")));
+    // undirected.kruskalMST();
+
+    Graph<AirportData> krusk = undirected.kruskalMST();
+    // krusk.print();
 
 
   }
