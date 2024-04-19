@@ -21,7 +21,7 @@ public:
   Graph<T> createUndirected(); 
   void directConnections(); // display direct connections (to and from) each vertex
 
-  void Prim_ShortestPath(const Vertex<T>& src); //prints prim path
+  void Prim_ShortestPath(); //prints prim path
 
   //void kruskalMST(Graph<T>& initialGraph);
   void kruskalMST(); //prints kruskal MST

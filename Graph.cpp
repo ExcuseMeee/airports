@@ -143,34 +143,55 @@ void Graph<T>::cleanVisited() {
 }
 
 template<typename T>
-void Graph<T>::Prim_ShortestPath(const Vertex<T>& src) {
-
-  std::vector<int> parent(vertices.size(), -1); // store contructed MST
-  std::vector<int> key(vertices.size(), 2147483647); // key values to pick min weight edge
+void Graph<T>::Prim_ShortestPath() {
+  std::vector<int> key(vertices.size(), INT_MAX); // key values to pick min weight edge
   std::vector<bool> inside(vertices.size(), false); // checks if in MST
 
   //queue to store vertices
   MinHeap<Edge> minHeap;
-
-  int src_ind = getVertexIndex(src);
-  if (src_ind == -1) throw std::string("[Prim_ShortestPath] invalid vertices");
-  key[src_ind] = 0;
+  Graph<T> prim_graph;
+  key[0] = 0;
+  
 
   // inserts src into queue.
-  minHeap.insert(Edge(src_ind, src_ind, 0, 0));
+
+  minHeap.insert(Edge(0, 0, 0, 0));
 
   while (!minHeap.empty()) {
     //extract min key value
     Edge minEdge = minHeap.popMin();
-    int value = minEdge.source;
+    int u = minEdge.destination;
 
-    //set as in the MST
-    inside[value] = true;
+    //checks if vertex is already inside the MST
+    if (inside[u]){
+      continue;
+    }
 
-    //update key and parent vertices with adjacent
+    //set dest vertex to be in the MST
+    inside[u] = true;
 
+    //add edge to mst
+    prim_graph.addEdge(vertices[minEdge.source],vertices[minEdge.destination], minEdge.distance, minEdge.cost, false, minEdge.considerCost);
+
+    //add all edges to the heap
+    for (const Edge& edge : adjacencyLists[u] ) {
+      int v = edge.destination;
+      if (!inside[v] && edge.distance < key[v]) {
+        key[v] = edge.distance;
+        minHeap.insert(edge);
+      }
+    }
   }
-
+  //print
+  cout << "[Prim's MST]" << endl;
+    for (int i = 0; i < vertices.size(); ++i) {
+        for (const Edge& edge : prim_graph.adjacencyLists[i]) {
+            cout << "[Prim's MST] " << vertices[edge.source].getData() << " - "
+                 << vertices[edge.destination].getData() << " ("
+                 << edge.distance << ", "
+                 << edge.cost << ")" << endl;
+        }
+    }
 }
 
 
