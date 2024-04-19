@@ -23,8 +23,8 @@ public:
 
   void Prim_ShortestPath(const Vertex<T>& src); //prints prim path
 
-  void kruskalMST(Graph<T>& initialGraph);
-  void Kruskal_ShortestPath(const Vertex<T>& src); //prints kruskal path
+  //void kruskalMST(Graph<T>& initialGraph);
+  void kruskalMST(); //prints kruskal MST
 
   void setConsiderCost(bool considerCost); // set all edges to considerCost (set to true or false)
 
@@ -38,7 +38,7 @@ private:
 
   bool areNeighbors(const Vertex<T>& src, const Vertex<T>& dest);
 
-  
+
 
 };
 
