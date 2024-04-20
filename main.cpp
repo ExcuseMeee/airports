@@ -50,6 +50,8 @@ int main() {
     Graph<AirportData> krusk = undirected.kruskalMST();
     // krusk.print();
 
+    undirected.Prim_ShortestPath();
+
 
   }
   catch (const std::string& e)

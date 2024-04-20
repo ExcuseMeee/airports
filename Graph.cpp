@@ -151,11 +151,11 @@ void Graph<T>::Prim_ShortestPath() {
   MinHeap<Edge> minHeap;
   Graph<T> prim_graph;
   key[0] = 0;
-  
+
 
   // inserts src into queue.
 
-  minHeap.insert(Edge(0, 0, 0, 0));
+  minHeap.insert(Edge(0, 0, 0, 0, true)); // POSSIBLE ERROR HERE. What is it you're trying to insert?
 
   while (!minHeap.empty()) {
     //extract min key value
@@ -163,18 +163,19 @@ void Graph<T>::Prim_ShortestPath() {
     int u = minEdge.destination;
 
     //checks if vertex is already inside the MST
-    if (inside[u]){
+    if (inside[u]) {
       continue;
     }
 
     //set dest vertex to be in the MST
     inside[u] = true;
 
+    puts("Here"); // ERROR OCCURS HERE. WHEN INSERTING EDGE
     //add edge to mst
-    prim_graph.addEdge(vertices[minEdge.source],vertices[minEdge.destination], minEdge.distance, minEdge.cost, false, minEdge.considerCost);
+    prim_graph.addEdge(vertices[minEdge.source], vertices[minEdge.destination], minEdge.distance, minEdge.cost, false, minEdge.considerCost);
 
     //add all edges to the heap
-    for (const Edge& edge : adjacencyLists[u] ) {
+    for (const Edge& edge : adjacencyLists[u]) {
       int v = edge.destination;
       if (!inside[v] && edge.distance < key[v]) {
         key[v] = edge.distance;
@@ -184,14 +185,14 @@ void Graph<T>::Prim_ShortestPath() {
   }
   //print
   std::cout << "[Prim's MST]" << std::endl;
-    for (int i = 0; i < vertices.size(); ++i) {
-        for (const Edge& edge : prim_graph.adjacencyLists[i]) {
-            std::cout << "[Prim's MST] " << vertices[edge.source].getData() << " - "
-                 << vertices[edge.destination].getData() << " ("
-                 << edge.distance << ", "
-                 << edge.cost << ")" << std::endl;
-        }
+  for (int i = 0; i < vertices.size(); ++i) {
+    for (const Edge& edge : prim_graph.adjacencyLists[i]) {
+      std::cout << "[Prim's MST] " << vertices[edge.source].getData() << " - "
+        << vertices[edge.destination].getData() << " ("
+        << edge.distance << ", "
+        << edge.cost << ")" << std::endl;
     }
+  }
 }
 
 template<typename T>
@@ -217,22 +218,22 @@ Graph<T> Graph<T>::kruskalMST() {
 
   while (!edgeHeap.empty() && total_edges < max_edges) {
     Edge edge = edgeHeap.popMin(); //add edge to MST
-    
+
     if (uf.find(edge.source) != uf.find(edge.destination)) { //check for cycles
       uf.unionFunction(edge.source, edge.destination);
-      MST_final_edges.push_back(edge); 
+      MST_final_edges.push_back(edge);
       Kruskal_MST_Graph.addEdge(vertices[edge.source], vertices[edge.destination], edge.distance, edge.cost, false, edge.considerCost);
       total_edge_cost += edge.cost;
       total_edges++;
-  }
-  }
-    for (const Edge& edge : MST_final_edges) {
-      std::cout << "[Kruskal MST] ";
-      std::cout << vertices[edge.source].getData() << " - ";
-      std::cout << vertices[edge.destination].getData() << " (";
-      std::cout << edge.distance << ", ";
-      std::cout << edge.cost << ")" << std::endl;
     }
+  }
+  for (const Edge& edge : MST_final_edges) {
+    std::cout << "[Kruskal MST] ";
+    std::cout << vertices[edge.source].getData() << " - ";
+    std::cout << vertices[edge.destination].getData() << " (";
+    std::cout << edge.distance << ", ";
+    std::cout << edge.cost << ")" << std::endl;
+  }
 
   std::cout << "[Kruskal MST] Total Edge Cost " << total_edge_cost << std::endl;
 
