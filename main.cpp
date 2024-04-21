@@ -13,26 +13,14 @@ std::vector<std::string> tokenize(std::string& line, char delimiter = ' ');
 
 void addAirportEdge(const std::vector<std::string>& tokens, Graph<AirportData>& airports);
 
+void processCSV(std::string filename, Graph<AirportData>& airports, bool skipFirst);
+
 
 int main() {
 
   // testing to read CSV
   Graph<AirportData> airports;
-  std::ifstream inFile("testing.csv");
-  std::string line;
-  std::getline(inFile, line); // skip first line. ASSUMING first line is not data
-  while (std::getline(inFile, line)) {
-    try {
-      std::vector<std::string> tkns = tokenize(line, ',');
-      addAirportEdge(tkns, airports);
-    }
-    catch (const std::string& msg) {
-      // if error occurs, skip this line
-      std::cout << msg << "...skipping line\n";
-      continue;
-    }
-
-  }
+  processCSV("testing.csv", airports, true);
   try
   {
 
@@ -96,5 +84,34 @@ void addAirportEdge(const std::vector<std::string>& tokens, Graph<AirportData>& 
   airports.insertVertex(srcVertex);
   airports.insertVertex(destVertex);
   airports.addEdge(srcVertex, destVertex, std::stoi(tokens.at(6)), std::stoi(tokens.at(7)));
+
+}
+
+void processCSV(std::string filename, Graph<AirportData>& airports, bool skipFirst) {
+  std::ifstream inFile(filename);
+
+  std::string line;
+  if (skipFirst) std::getline(inFile, line);
+
+  while (std::getline(inFile, line)) {
+    try {
+      std::vector<std::string> tkns = tokenize(line, ',');
+      addAirportEdge(tkns, airports);
+    }
+    catch (const std::string& msg) {
+      // if error occurs, skip this line
+      std::cout << "[processCSV] "
+        << msg
+        << "...skipping line"
+        << std::endl;
+      continue;
+    }
+    catch (const std::exception& e) {
+      // other errors?
+      std::cerr << e.what() << '\n';
+    }
+
+
+  }
 
 }
