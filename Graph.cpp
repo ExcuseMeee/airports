@@ -104,7 +104,7 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
 
   cleanVisited();
 
-  std::cout << "[findShortestPath] ";
+  std::cout << "Shortest path " << src.getData() << " to " << dest.getData() << ": ";
   //printing path and distance/cost
   if (distances[dest_ind] == 2147483647) {
     std::cout << "Unreachable" << std::endl;
@@ -121,13 +121,12 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
 
     while (!st.empty()) {
       int i = st.top();
-      std::cout << vertices[i].getData() << "->";
+      std::cout << vertices[i].getData();
       st.pop();
+      if (!st.empty()) std::cout << "->";
     }
-    std::cout << "(end) ";
 
-
-    std::cout << "Distance: " << distances.at(dest_ind) << ", " << "Cost: " << costs.at(dest_ind) << std::endl;
+    std::cout << " (Distance: " << distances.at(dest_ind) << ", " << "Cost: " << costs.at(dest_ind) << ")" << std::endl;
 
   }
 
@@ -138,81 +137,79 @@ template<typename T>
 void Graph<T>::shortestPathsToState(const Vertex<T>& origin, std::string dest_state) {
   //find all destination airports for the state
   bool pathPresent = false;
+  std::cout << "Shortest Paths to " << dest_state << " airports from " << origin.getData() << std::endl;
   for (const Vertex<T>& vertex : vertices) { //adds vertices to graph
-    if (pathPresent == false) {
-      std::cout << "Shortest Paths to " << dest_state << std::endl;
-    }
     AirportData vertexAirportData = vertex.getData();
     if (dest_state == vertexAirportData.stateCode) {
-      findShortestPath(origin, vertex); //this is the error
+      findShortestPath(origin, vertex); // NOTE: shortest path depends on whether the edge considers cost or distance
       pathPresent = true;
     }
-}
+  }
   if (pathPresent == false) {
     std::cout << "[shortestPathstoState] There are no valid paths" << std::endl;
   }
 }
 
 template<typename T>
-void Graph<T>::shortestPathsWithStops(const Vertex<T>& origin, const Vertex<T>& dest, int stops){
-  std::cout << "[Shortest Paths with " << stops << " Stops]: " << std::endl;
-    // Find the index of the destination vertex
-    int destIndex = getVertexIndex(dest);
+void Graph<T>::shortestPathsWithStops(const Vertex<T>& origin, const Vertex<T>& dest, int stops) {
+  std::cout << "[Shortest Paths with " << stops << " Stops] " << origin.getData() << " to " << dest.getData() << std::endl;
+  // Find the index of the destination vertex
+  int destIndex = getVertexIndex(dest);
 
-    // If the destination vertex doesn't exist, return
-    if (destIndex == -1) {
-        std::cout << "[SPWS]Destination vertex not found" << std::endl;
-        return;
-    }
+  // If the destination vertex doesn't exist, return
+  if (destIndex == -1) {
+    std::cout << "[SPWS]Destination vertex not found" << std::endl;
+    return;
+  }
 
-    // Perform DFS starting from the origin vertex
-    Stack<std::vector<int>> dfsStack;
-    std::vector<int> initialPath = {getVertexIndex(origin)};
-    dfsStack.push(initialPath);
-    int shortestDistance = 2147483647;
-    int shortestCost = 0;
-    std::vector<int> shortestPath;
+  // Perform DFS starting from the origin vertex
+  Stack<std::vector<int>> dfsStack;
+  std::vector<int> initialPath = { getVertexIndex(origin) };
+  dfsStack.push(initialPath);
+  int shortestDistance = 2147483647;
+  int shortestCost = 0;
+  std::vector<int> shortestPath;
 
-  
-    while (!dfsStack.empty()) {
-      std::vector<int> currentPath = dfsStack.top();
-      dfsStack.pop();
 
-      int currentVertexIndex = currentPath.back();
-      if (currentPath.size() - 1 == stops && currentVertexIndex == destIndex) {
-          // Found a path with the specified number of stops
-        int totalDistance = 0;
-        int totalCost = 0;
-        for (int i = 0; i < currentPath.size() - 1; ++i) {
-          int srcIndex = currentPath[i];
-          int destIndex = currentPath[i + 1];
-          for (const Edge& edge : adjacencyLists[srcIndex]) {
-            if (edge.destination == destIndex) {
-                totalDistance += edge.distance;
-                totalCost += edge.cost;
-                break;
-            }
+  while (!dfsStack.empty()) {
+    std::vector<int> currentPath = dfsStack.top();
+    dfsStack.pop();
+
+    int currentVertexIndex = currentPath.back();
+    if (currentPath.size() - 2 == stops && currentVertexIndex == destIndex) {
+      // Found a path with the specified number of stops
+      int totalDistance = 0;
+      int totalCost = 0;
+      for (int i = 0; i < currentPath.size() - 1; ++i) {
+        int srcIndex = currentPath[i];
+        int destIndex = currentPath[i + 1];
+        for (const Edge& edge : adjacencyLists[srcIndex]) {
+          if (edge.destination == destIndex) {
+            totalDistance += edge.distance;
+            totalCost += edge.cost;
+            break;
           }
         }
-        if (totalDistance < shortestDistance) {
-          shortestDistance = totalDistance;
-          shortestCost = totalCost;
-          shortestPath = currentPath;
-        }
+      }
+      if (totalDistance < shortestDistance) {
+        shortestDistance = totalDistance;
+        shortestCost = totalCost;
+        shortestPath = currentPath;
+      }
     }
 
-      // If num of stop > stops needed, skip
+    // If num of stop > stops needed, skip
     if (currentPath.size() - 1 > stops) {
-        continue;
+      continue;
     }
 
     // Explore neighbors
     for (const Edge& edge : adjacencyLists[currentVertexIndex]) {
-        std::vector<int> newPath = currentPath;
-        newPath.push_back(edge.destination);
-        dfsStack.push(newPath);
+      std::vector<int> newPath = currentPath;
+      newPath.push_back(edge.destination);
+      dfsStack.push(newPath);
     }
-      
+
   }
   for (int i = 0; i < shortestPath.size() - 1; ++i) {
     std::cout << vertices[shortestPath[i]].getData() << " -> ";
@@ -243,38 +240,38 @@ void Graph<T>::Prim_ShortestPath() {
 
   // Initialize minHeap with edges connected to the starting vertex (vertex 0)
   for (const Edge& edge : adjacencyLists[0]) {
-      minHeap.insert(edge);
+    minHeap.insert(edge);
   }
-  
+
 
 
   while (!minHeap.empty() || total_edges > vertices.size()) {
-      // Extract min key value
-      Edge minEdge = minHeap.popMin();
-      int minEdgeSource = minEdge.source;
-      int minEdgeDestination = minEdge.destination;
+    // Extract min key value
+    Edge minEdge = minHeap.popMin();
+    int minEdgeSource = minEdge.source;
+    int minEdgeDestination = minEdge.destination;
 
-      // Check if both vertices aren't in MST
-      if (!inside[minEdgeSource] || !inside[minEdgeDestination]) {
+    // Check if both vertices aren't in MST
+    if (!inside[minEdgeSource] || !inside[minEdgeDestination]) {
 
-          // Set both vertices to be in the MST
-          inside[minEdgeSource] = true;
-          inside[minEdgeDestination] = true;
+      // Set both vertices to be in the MST
+      inside[minEdgeSource] = true;
+      inside[minEdgeDestination] = true;
 
-          // Add edge to MST
-          prim_graph.addEdge(vertices[minEdgeSource], vertices[minEdgeDestination], minEdge.distance, minEdge.cost, false, minEdge.considerCost);
-        total_edges++;
-        std::cout << total_edges;
+      // Add edge to MST
+      prim_graph.addEdge(vertices[minEdgeSource], vertices[minEdgeDestination], minEdge.distance, minEdge.cost, false, minEdge.considerCost);
+      total_edges++;
+      std::cout << total_edges;
 
-          // Add all edges connected to the destination vertex to the minHeap
-          for (const Edge& edge : adjacencyLists[minEdgeDestination]) {
-              int v = edge.destination;
-              if (!inside[v] && edge.distance < key[v]) {
-                  key[v] = edge.distance;
-                  minHeap.insert(edge);
-              }
-          }
+      // Add all edges connected to the destination vertex to the minHeap
+      for (const Edge& edge : adjacencyLists[minEdgeDestination]) {
+        int v = edge.destination;
+        if (!inside[v] && edge.distance < key[v]) {
+          key[v] = edge.distance;
+          minHeap.insert(edge);
+        }
       }
+    }
   }
 
   //print

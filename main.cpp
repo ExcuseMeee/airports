@@ -6,47 +6,39 @@
 #include "Graph.h"
 #include "Graph.cpp"
 #include "AirportData.h"
-#include "UnionFind.h"
-#include "UnionFind.cpp" //REMOVE DEPENDING ON YOUR COMPILER
+// #include "UnionFind.h"
+// #include "UnionFind.cpp" //REMOVE DEPENDING ON YOUR COMPILER
 
 // should return {srcAirport, destAirport, srcCity, srcState, destCity, destState, distance, cost}
 std::vector<std::string> tokenize(std::string& line, char delimiter = ' ');
-
 void addAirportEdge(const std::vector<std::string>& tokens, Graph<AirportData>& airports);
+void processCSV(std::string filename, Graph<AirportData>& airports, bool skipFirst);
 
 
 int main() {
 
   // testing to read CSV
   Graph<AirportData> airports;
-  std::ifstream inFile("testing.csv");
-  std::string line;
-  std::getline(inFile, line); // skip first line. ASSUMING first line is not data
-  while (std::getline(inFile, line)) {
-    try {
-      std::vector<std::string> tkns = tokenize(line, ',');
-      addAirportEdge(tkns, airports);
-    }
-    catch (const std::string& msg) {
-      // if error occurs, skip this line
-      std::cout << msg << "...skipping line\n";
-      continue;
-    }
-
-  }
+  processCSV("airports.csv", airports, true);
   try
   {
 
-    airports.print();
-    airports.findShortestPath(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")));
+    // airports.print();
+    puts("");
+    airports.findShortestPath(Vertex<AirportData>(AirportData("ABE", "Allentown", "PA")), Vertex<AirportData>(AirportData("EWR", "Newark", "NJ")));
+    puts("");
+    airports.shortestPathsToState(Vertex<AirportData>(AirportData("ABE", "Allentown", "PA")), std::string("NJ"));
+    puts("");
     airports.directConnections();
+    puts("");
+    airports.shortestPathsWithStops(Vertex<AirportData>(AirportData("ABE", "Allentown", "PA")), Vertex<AirportData>(AirportData("EWR", "Newark", "NJ")), 2);
+    puts("");
 
     Graph<AirportData> undirected = airports.createUndirected(); // undirected graph considers COST by default
-    undirected.print();
-    undirected.findShortestPath(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")));
+    // undirected.print();
+    puts("");
     undirected.kruskalMST();
-    undirected.shortestPathsToState(Vertex<AirportData>(AirportData("A", "Src", "FL")), std::string("FL"));
-    undirected.shortestPathsWithStops(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")), 2);
+    // undirected.Prim_ShortestPath();
 
 
   }
@@ -70,8 +62,8 @@ std::vector<std::string> tokenize(std::string& line, char delimiter) {
   std::string token;
   while (std::getline(iss, token, delimiter)) {
     // strip token of leading/trailing whitespace and quotes
-    if (token.front() == ' ' || token.front() == '"') token.erase(0, 1);
-    if (token.back() == ' ' || token.back() == '"') token.erase(token.size() - 1, 1);
+    while (token.front() == ' ' || token.front() == '"') token.erase(0, 1);
+    while (token.back() == ' ' || token.back() == '"') token.erase(token.size() - 1, 1);
 
     if (!token.empty()) tokens.push_back(token);
   }
@@ -92,5 +84,35 @@ void addAirportEdge(const std::vector<std::string>& tokens, Graph<AirportData>& 
   airports.insertVertex(srcVertex);
   airports.insertVertex(destVertex);
   airports.addEdge(srcVertex, destVertex, std::stoi(tokens.at(6)), std::stoi(tokens.at(7)));
+
+}
+
+
+void processCSV(std::string filename, Graph<AirportData>& airports, bool skipFirst) {
+  std::ifstream inFile(filename);
+
+  std::string line;
+  if (skipFirst) std::getline(inFile, line);
+
+  while (std::getline(inFile, line)) {
+    try {
+      std::vector<std::string> tkns = tokenize(line, ',');
+      addAirportEdge(tkns, airports);
+    }
+    catch (const std::string& msg) {
+      // if error occurs, skip this line
+      std::cout << "[processCSV] "
+        << msg
+        << "...skipping line"
+        << std::endl;
+      continue;
+    }
+    catch (const std::exception& e) {
+      // other errors?
+      std::cerr << e.what() << '\n';
+    }
+
+
+  }
 
 }

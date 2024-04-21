@@ -15,6 +15,7 @@ public:
   void addEdge(const Vertex<T>& origin, const Vertex<T>& dest, int distance, int cost, bool directed = true, bool considerCost = false); 
   void print() const;
 
+  // NOTE: depending on edges, it will print either least DISTANCE or COST
   void findShortestPath(const Vertex<T>& src, const Vertex<T>& dest); // print path, distance, and cost
 
   // create undirected graph using this graph as basis. graph chooses edges with least COST. created graph considers COST by default.
