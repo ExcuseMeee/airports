@@ -27,9 +27,9 @@ public:
 
   void setConsiderCost(bool considerCost); // set all edges to considerCost (set to true or false)
 
-  void shortestPathsToState(const Vertex<T>& origin, std::string dest_state);
-  void shortestPathsWithStops(const Vertex<T>& origin, const Vertex<T>& dest, int stops);
+  void shortestPathsToState(const Vertex<T>& origin, std::string dest_state); //prints all shortest paths for airports in destination state.
 
+  void shortestPathsWithStops(const Vertex<T>& origin, const Vertex<T>& dest, int stops);
 
 private:
   std::vector<Vertex<T>> vertices;
@@ -39,6 +39,7 @@ private:
   void cleanVisited();
 
   bool areNeighbors(const Vertex<T>& src, const Vertex<T>& dest);
+
 
 
 
