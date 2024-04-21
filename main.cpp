@@ -32,14 +32,15 @@ int main() {
 
     Graph<AirportData> undirected = airports.createUndirected(); // undirected graph considers COST by default
     // undirected.print();
-    // undirected.findShortestPath(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")));
+    undirected.findShortestPath(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")));
     // undirected.kruskalMST();
 
     // Graph<AirportData> krusk = undirected.kruskalMST();
     // krusk.print();
 
     // undirected.Prim_ShortestPath();
-    undirected.shortestPathsToState(Vertex<AirportData>(AirportData("A", "Src", "FL")), std::string("FL"));
+    // undirected.shortestPathsToState(Vertex<AirportData>(AirportData("A", "Src", "FL")), std::string("FL"));
+    undirected.shortestPathsWithStops(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")), 2);
 
   }
   catch (const std::string& e)

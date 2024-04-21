@@ -135,17 +135,6 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
 
 }
 
-// template<typename T>
-// void Graph<T>::shortestPathsToState(const Vertex<T>& origin, std::string dest_state) {
-//   //find all destination airports for the state
-
-//     std::vector<Vertex<T>> destinations;
-//     for (const Vertex<T>& vertex : vertices) {
-//         if (vertex.getData() == dest_state) {  // Assuming getState() returns the state of the airport
-//             destinations.push_back(v);
-//         }
-//     }
-// }
 template<typename T>
 void Graph<T>::shortestPathsToState(const Vertex<T>& origin, std::string dest_state) {
   //find all destination airports for the state
@@ -157,6 +146,75 @@ void Graph<T>::shortestPathsToState(const Vertex<T>& origin, std::string dest_st
     }
 }
 }
+
+template<typename T>
+void Graph<T>::shortestPathsWithStops(const Vertex<T>& origin, const Vertex<T>& dest, int stops){
+  std::cout << "[Shortest Paths with " << stops << " Stops]: " << std::endl;
+    // Find the index of the destination vertex
+    int destIndex = getVertexIndex(dest);
+
+    // If the destination vertex doesn't exist, return
+    if (destIndex == -1) {
+        std::cerr << "Destination vertex not found!" << std::endl;
+        return;
+    }
+// Perform DFS starting from the origin vertex
+    Stack<std::vector<int>> dfsStack;
+    std::vector<int> initialPath = {getVertexIndex(origin)};
+    dfsStack.push(initialPath);
+    int shortestDistance = 2147483647;
+    int shortestCost = 0;
+    std::vector<int> shortestPath;
+
+
+    while (!dfsStack.empty()) {
+      std::vector<int> currentPath = dfsStack.top();
+      dfsStack.pop();
+
+      int currentVertexIndex = currentPath.back();
+      if (currentPath.size() - 1 == stops && currentVertexIndex == destIndex) {
+          // Found a path with the specified number of stops
+        int totalDistance = 0;
+        int totalCost = 0;
+        for (int i = 0; i < currentPath.size() - 1; ++i) {
+          int srcIndex = currentPath[i];
+          int destIndex = currentPath[i + 1];
+          for (const Edge& edge : adjacencyLists[srcIndex]) {
+            if (edge.destination == destIndex) {
+                totalDistance += edge.distance;
+                totalCost += edge.cost;
+                break;
+            }
+          }
+          
+        }
+        if (totalDistance < shortestDistance) {
+            shortestDistance = totalDistance;
+            shortestCost = totalCost;
+            shortestPath = currentPath;
+          }
+    }
+
+      // If the number of stops exceeds the specified limit, skip exploring further
+    if (currentPath.size() - 1 > stops) {
+        continue;
+    }
+
+    // Explore neighbors
+    for (const Edge& edge : adjacencyLists[currentVertexIndex]) {
+        std::vector<int> newPath = currentPath;
+        newPath.push_back(edge.destination);
+        dfsStack.push(newPath);
+    }
+
+  }
+  for (int i = 0; i < shortestPath.size() - 1; ++i) {
+    std::cout << vertices[shortestPath[i]].getData() << " -> ";
+  }
+  std::cout << vertices[shortestPath.back()].getData();
+  std::cout << " (Total Distance: " << shortestDistance << ", Total Cost: " << shortestCost << ")" << std::endl;
+}
+
 template<typename T>
 void Graph<T>::cleanVisited() {
   for (Vertex<T>& v : this->vertices) {
