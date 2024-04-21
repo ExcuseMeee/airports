@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include <queue> // delete later
 #include "Graph.h"
 #include "Vertex.h"
 #include "MinHeap.h"
@@ -9,6 +8,7 @@
 #include "Stack.cpp"
 #include "UnionFind.h"
 #include "AirportData.h"
+
 
 template<typename T>
 Graph<T>::Graph() {}
@@ -32,7 +32,6 @@ template<typename T>
 void Graph<T>::addEdge(const Vertex<T>& origin, const Vertex<T>& dest, int distance, int cost, bool directed, bool considerCost) {
   int origin_ind = getVertexIndex(origin);
   int dest_ind = getVertexIndex(dest);
-
   if (origin_ind == -1 || dest_ind == -1) throw std::string("[addEdge] invalid edges");
 
   adjacencyLists[origin_ind].push_back(Edge(origin_ind, dest_ind, distance, cost, considerCost));
@@ -65,12 +64,12 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
 
   if (src_ind == -1 || dest_ind == -1) throw std::string("[findShortestPath] invalid vertices");
 
-  // use dijkstra
+  //use dijkstra
   cleanVisited();
-  std::vector<int> distances(vertices.size(), 2147483647); // set all distances to infinite
-  distances[src_ind] = 0; // distance to self is 0
+  std::vector<int> distances(vertices.size(), 2147483647); //set all distances to infinite
+  distances[src_ind] = 0; //distance to self is 0
 
-  std::vector<int> costs(vertices.size()); // cost to reach each node
+  std::vector<int> costs(vertices.size()); //cost to reach each node
   std::vector<int> paths(vertices.size());
 
   MinHeap<Edge> minHeap;
@@ -78,27 +77,27 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
   int curIndex = src_ind;
   while (visited < vertices.size()) {
     for (Edge edge : adjacencyLists[curIndex]) {
-      // only care about unvisited neighbors. skip visited neighbors
+      //only care about unvisited neighbors. skip visited neighbors
       if (vertices[edge.destination].getVisited() == false) {
         minHeap.insert(edge);
         int totalDistanceToDest = distances[curIndex] + edge.distance;
         int totalCostToDest = costs[curIndex] + edge.cost;
 
-        // update values if totalDistanceToDest is desirable (less than the current distance to reach destination)
+        //update values if totalDistanceToDest is desirable (less than the current distance to reach destination)
         if (totalDistanceToDest < distances[edge.destination]) {
           distances[edge.destination] = totalDistanceToDest;
-          costs[edge.destination] = totalCostToDest; // cost to reach destination
-          paths[edge.destination] = curIndex; // we reached destination FROM curIndex
+          costs[edge.destination] = totalCostToDest; //cost to reach destination
+          paths[edge.destination] = curIndex; //we reached destination FROM curIndex
         }
 
       }
     }
 
-    // once we go through all neighbors, we mark this vertex visited, then choose next smallest edge
+    //once we go through all neighbors, we mark this vertex visited, then choose next smallest edge
     vertices[curIndex].setVisited(true);
-    if (!minHeap.empty()) { // this gets rid of some bugs... i hope it doesn't cause any itself (probably does)
+    if (!minHeap.empty()) {
       Edge smallestEdge = minHeap.popMin();
-      curIndex = smallestEdge.destination; // move to vertex of smallest edge
+      curIndex = smallestEdge.destination; //move to vertex of smallest edge
     }
     visited++;
   }
@@ -106,12 +105,12 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
   cleanVisited();
 
   std::cout << "[findShortestPath] ";
-  // printing path and distance/cost
+  //printing path and distance/cost
   if (distances[dest_ind] == 2147483647) {
     std::cout << "Unreachable" << std::endl;
   }
   else {
-    // use stack to print paths. paths maps from destination to source, we want source to destination
+    //use stack to print paths. paths maps from destination to source, we want source to destination
     Stack<int> st;
     int ind = dest_ind;
     st.push(ind);
@@ -138,13 +137,20 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
 template<typename T>
 void Graph<T>::shortestPathsToState(const Vertex<T>& origin, std::string dest_state) {
   //find all destination airports for the state
-  std::cout << "[Shortest Paths to " << dest_state << "]: " << std::endl;
+  bool pathPresent = false;
   for (const Vertex<T>& vertex : vertices) { //adds vertices to graph
+    if (pathPresent == false) {
+      std::cout << "Shortest Paths to " << dest_state << std::endl;
+    }
     AirportData vertexAirportData = vertex.getData();
     if (dest_state == vertexAirportData.stateCode) {
-      findShortestPath(origin, vertex);
+      findShortestPath(origin, vertex); //this is the error
+      pathPresent = true;
     }
 }
+  if (pathPresent == false) {
+    std::cout << "[shortestPathstoState] There are no valid paths" << std::endl;
+  }
 }
 
 template<typename T>
@@ -155,10 +161,11 @@ void Graph<T>::shortestPathsWithStops(const Vertex<T>& origin, const Vertex<T>& 
 
     // If the destination vertex doesn't exist, return
     if (destIndex == -1) {
-        std::cerr << "Destination vertex not found!" << std::endl;
+        std::cout << "[SPWS]Destination vertex not found" << std::endl;
         return;
     }
-// Perform DFS starting from the origin vertex
+
+    // Perform DFS starting from the origin vertex
     Stack<std::vector<int>> dfsStack;
     std::vector<int> initialPath = {getVertexIndex(origin)};
     dfsStack.push(initialPath);
@@ -166,7 +173,7 @@ void Graph<T>::shortestPathsWithStops(const Vertex<T>& origin, const Vertex<T>& 
     int shortestCost = 0;
     std::vector<int> shortestPath;
 
-
+  
     while (!dfsStack.empty()) {
       std::vector<int> currentPath = dfsStack.top();
       dfsStack.pop();
@@ -186,16 +193,15 @@ void Graph<T>::shortestPathsWithStops(const Vertex<T>& origin, const Vertex<T>& 
                 break;
             }
           }
-          
         }
         if (totalDistance < shortestDistance) {
-            shortestDistance = totalDistance;
-            shortestCost = totalCost;
-            shortestPath = currentPath;
-          }
+          shortestDistance = totalDistance;
+          shortestCost = totalCost;
+          shortestPath = currentPath;
+        }
     }
 
-      // If the number of stops exceeds the specified limit, skip exploring further
+      // If num of stop > stops needed, skip
     if (currentPath.size() - 1 > stops) {
         continue;
     }
@@ -206,7 +212,7 @@ void Graph<T>::shortestPathsWithStops(const Vertex<T>& origin, const Vertex<T>& 
         newPath.push_back(edge.destination);
         dfsStack.push(newPath);
     }
-
+      
   }
   for (int i = 0; i < shortestPath.size() - 1; ++i) {
     std::cout << vertices[shortestPath[i]].getData() << " -> ";
@@ -224,55 +230,63 @@ void Graph<T>::cleanVisited() {
 
 template<typename T>
 void Graph<T>::Prim_ShortestPath() {
-  std::vector<int> key(vertices.size(), INT_MAX); // key values to pick min weight edge
+  std::vector<int> key(vertices.size(), 2147483647); // key values to pick min weight edge
   std::vector<bool> inside(vertices.size(), false); // checks if in MST
 
   //queue to store vertices
   MinHeap<Edge> minHeap;
   Graph<T> prim_graph;
   key[0] = 0;
-
+  int total_edges = 0;
 
   // inserts src into queue.
 
-  minHeap.insert(Edge(0, 0, 0, 0, true)); // POSSIBLE ERROR HERE. What is it you're trying to insert?
-
-  while (!minHeap.empty()) {
-    //extract min key value
-    Edge minEdge = minHeap.popMin();
-    int u = minEdge.destination;
-
-    //checks if vertex is already inside the MST
-    if (inside[u]) {
-      continue;
-    }
-
-    //set dest vertex to be in the MST
-    inside[u] = true;
-
-    // puts("Here"); // ERROR OCCURS HERE. WHEN INSERTING EDGE
-    // //add edge to mst
-    prim_graph.addEdge(vertices[minEdge.source], vertices[minEdge.destination], minEdge.distance, minEdge.cost, false, minEdge.considerCost);
-
-    // //add all edges to the heap
-    // for (const Edge& edge : adjacencyLists[u]) {
-    //   int v = edge.destination;
-    //   if (!inside[v] && edge.distance < key[v]) {
-    //     key[v] = edge.cost;
-    //     minHeap.insert(edge);
-    //   }
-    // }
+  // Initialize minHeap with edges connected to the starting vertex (vertex 0)
+  for (const Edge& edge : adjacencyLists[0]) {
+      minHeap.insert(edge);
   }
+  
+
+
+  while (!minHeap.empty() || total_edges > vertices.size()) {
+      // Extract min key value
+      Edge minEdge = minHeap.popMin();
+      int minEdgeSource = minEdge.source;
+      int minEdgeDestination = minEdge.destination;
+
+      // Check if both vertices aren't in MST
+      if (!inside[minEdgeSource] || !inside[minEdgeDestination]) {
+
+          // Set both vertices to be in the MST
+          inside[minEdgeSource] = true;
+          inside[minEdgeDestination] = true;
+
+          // Add edge to MST
+          prim_graph.addEdge(vertices[minEdgeSource], vertices[minEdgeDestination], minEdge.distance, minEdge.cost, false, minEdge.considerCost);
+        total_edges++;
+        std::cout << total_edges;
+
+          // Add all edges connected to the destination vertex to the minHeap
+          for (const Edge& edge : adjacencyLists[minEdgeDestination]) {
+              int v = edge.destination;
+              if (!inside[v] && edge.distance < key[v]) {
+                  key[v] = edge.distance;
+                  minHeap.insert(edge);
+              }
+          }
+      }
+  }
+
   //print
-  // std::cout << "[Prim's MST]" << std::endl;
-  // for (int i = 0; i < vertices.size(); ++i) {
-  //   for (const Edge& edge : prim_graph.adjacencyLists[i]) {
-  //     std::cout << "[Prim's MST] " << vertices[edge.source].getData() << " - "
-  //       << vertices[edge.destination].getData() << " ("
-  //       << edge.distance << ", "
-  //       << edge.cost << ")" << std::endl;
-  //   }
-  // }
+  std::cout << "[Prim's MST]" << std::endl;
+  for (int i = 0; i < vertices.size(); ++i) {
+    for (const Edge& edge : prim_graph.adjacencyLists[i]) {
+      std::cout << "[Prim's MST] " << vertices[edge.source].getData() << " - "
+        << vertices[edge.destination].getData() << " ("
+        << edge.distance << ", "
+        << edge.cost << ")" << std::endl;
+    }
+  }
 }
 
 template<typename T>
