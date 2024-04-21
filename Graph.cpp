@@ -8,7 +8,7 @@
 #include "Stack.h"
 #include "Stack.cpp"
 #include "UnionFind.h"
-
+#include "AirportData.h"
 
 template<typename T>
 Graph<T>::Graph() {}
@@ -135,6 +135,28 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
 
 }
 
+// template<typename T>
+// void Graph<T>::shortestPathsToState(const Vertex<T>& origin, std::string dest_state) {
+//   //find all destination airports for the state
+
+//     std::vector<Vertex<T>> destinations;
+//     for (const Vertex<T>& vertex : vertices) {
+//         if (vertex.getData() == dest_state) {  // Assuming getState() returns the state of the airport
+//             destinations.push_back(v);
+//         }
+//     }
+// }
+template<typename T>
+void Graph<T>::shortestPathsToState(const Vertex<T>& origin, std::string dest_state) {
+  //find all destination airports for the state
+  std::cout << "[Shortest Paths to " << dest_state << "]: " << std::endl;
+  for (const Vertex<T>& vertex : vertices) { //adds vertices to graph
+    AirportData vertexAirportData = vertex.getData();
+    if (dest_state == vertexAirportData.stateCode) {
+      findShortestPath(origin, vertex);
+    }
+}
+}
 template<typename T>
 void Graph<T>::cleanVisited() {
   for (Vertex<T>& v : this->vertices) {
@@ -170,29 +192,29 @@ void Graph<T>::Prim_ShortestPath() {
     //set dest vertex to be in the MST
     inside[u] = true;
 
-    puts("Here"); // ERROR OCCURS HERE. WHEN INSERTING EDGE
-    //add edge to mst
+    // puts("Here"); // ERROR OCCURS HERE. WHEN INSERTING EDGE
+    // //add edge to mst
     prim_graph.addEdge(vertices[minEdge.source], vertices[minEdge.destination], minEdge.distance, minEdge.cost, false, minEdge.considerCost);
 
-    //add all edges to the heap
-    for (const Edge& edge : adjacencyLists[u]) {
-      int v = edge.destination;
-      if (!inside[v] && edge.distance < key[v]) {
-        key[v] = edge.distance;
-        minHeap.insert(edge);
-      }
-    }
+    // //add all edges to the heap
+    // for (const Edge& edge : adjacencyLists[u]) {
+    //   int v = edge.destination;
+    //   if (!inside[v] && edge.distance < key[v]) {
+    //     key[v] = edge.cost;
+    //     minHeap.insert(edge);
+    //   }
+    // }
   }
   //print
-  std::cout << "[Prim's MST]" << std::endl;
-  for (int i = 0; i < vertices.size(); ++i) {
-    for (const Edge& edge : prim_graph.adjacencyLists[i]) {
-      std::cout << "[Prim's MST] " << vertices[edge.source].getData() << " - "
-        << vertices[edge.destination].getData() << " ("
-        << edge.distance << ", "
-        << edge.cost << ")" << std::endl;
-    }
-  }
+  // std::cout << "[Prim's MST]" << std::endl;
+  // for (int i = 0; i < vertices.size(); ++i) {
+  //   for (const Edge& edge : prim_graph.adjacencyLists[i]) {
+  //     std::cout << "[Prim's MST] " << vertices[edge.source].getData() << " - "
+  //       << vertices[edge.destination].getData() << " ("
+  //       << edge.distance << ", "
+  //       << edge.cost << ")" << std::endl;
+  //   }
+  // }
 }
 
 template<typename T>

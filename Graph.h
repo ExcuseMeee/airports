@@ -27,6 +27,8 @@ public:
 
   void setConsiderCost(bool considerCost); // set all edges to considerCost (set to true or false)
 
+  void shortestPathsToState(const Vertex<T>& origin, std::string dest_state);
+
 
 private:
   std::vector<Vertex<T>> vertices;
