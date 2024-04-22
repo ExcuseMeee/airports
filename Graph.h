@@ -30,7 +30,7 @@ public:
 
   void shortestPathsToState(const Vertex<T>& origin, std::string dest_state); //prints all shortest paths for airports in destination state.
 
-  void shortestPathsWithStops(const Vertex<T>& origin, const Vertex<T>& dest, int stops);
+  void shortestPathsWithStops(const Vertex<T>& origin, const Vertex<T>& dest, int stops); //prints the shortest path from given airports
 
 private:
   std::vector<Vertex<T>> vertices;
