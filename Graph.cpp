@@ -255,6 +255,11 @@ Graph<T> Graph<T>::Prim_ShortestPath() {
             prim_graph.insertVertex(vertices[minEdgeDestination]);
             prim_graph.addEdge(vertices[minEdgeSource], vertices[minEdgeDestination], minEdge.distance, minEdge.cost, false, minEdge.considerCost);
 
+            std::cout << "[Prim's MST] " << vertices[minEdgeSource].getData() << " - "
+                      << vertices[minEdgeDestination].getData() << " ("
+                      << minEdge.distance << ", "
+                      << minEdge.cost << ")" << std::endl;
+
             for (const Edge& edge : adjacencyLists[minEdgeDestination]) {
                 int v = edge.destination;
                 if (!inside[v] && edge.cost < key[v]) {
@@ -264,16 +269,7 @@ Graph<T> Graph<T>::Prim_ShortestPath() {
             }
         }
     }
-
-    std::cout << "[Prim's MST]" << std::endl;
-    for (int i = 0; i < prim_graph.vertices.size(); ++i) {
-        for (const Edge& edge : prim_graph.adjacencyLists[i]) {
-            std::cout << "[Prim's MST] " << prim_graph.vertices[edge.source].getData() << " - "
-                << prim_graph.vertices[edge.destination].getData() << " ("
-                << edge.distance << ", "
-                << edge.cost << ")" << std::endl;
-        }
-    }
+    
     std::cout << "[Prim's MST] Total Edge Cost: " << total_cost << std::endl;
 
     return prim_graph;
