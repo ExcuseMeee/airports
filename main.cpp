@@ -19,7 +19,7 @@ int main() {
 
   // testing to read CSV
   Graph<AirportData> airports;
-  processCSV("testing.csv", airports, true);
+  processCSV("airports.csv", airports, true);
   try
   {
 
