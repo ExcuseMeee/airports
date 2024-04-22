@@ -224,7 +224,6 @@ void Graph<T>::cleanVisited() {
     v.setVisited(false);
   }
 }
-
 template<typename T>
 void Graph<T>::Prim_ShortestPath() {
   std::vector<int> key(vertices.size(), 2147483647); // key values to pick min weight edge
@@ -235,46 +234,51 @@ void Graph<T>::Prim_ShortestPath() {
   Graph<T> prim_graph;
   key[0] = 0;
   int total_edges = 0;
-
-  // inserts src into queue.
-
-  // Initialize minHeap with edges connected to the starting vertex (vertex 0)
-  for (const Edge& edge : adjacencyLists[0]) {
-    minHeap.insert(edge);
-  }
-
-
-
-  while (!minHeap.empty() || total_edges > vertices.size()) {
-    // Extract min key value
-    Edge minEdge = minHeap.popMin();
-    int minEdgeSource = minEdge.source;
-    int minEdgeDestination = minEdge.destination;
-
-    // Check if both vertices aren't in MST
-    if (!inside[minEdgeSource] || !inside[minEdgeDestination]) {
-
-      // Set both vertices to be in the MST
-      inside[minEdgeSource] = true;
-      inside[minEdgeDestination] = true;
-
-      // Add edge to MST
-      prim_graph.addEdge(vertices[minEdgeSource], vertices[minEdgeDestination], minEdge.distance, minEdge.cost, false, minEdge.considerCost);
-      total_edges++;
-      std::cout << total_edges;
-
-      // Add all edges connected to the destination vertex to the minHeap
-      for (const Edge& edge : adjacencyLists[minEdgeDestination]) {
-        int v = edge.destination;
-        if (!inside[v] && edge.distance < key[v]) {
-          key[v] = edge.distance;
-          minHeap.insert(edge);
-        }
-      }
+  int total_cost = 0;
+    for (const Vertex<T>& vertex : vertices) { //adds vertices to graph
+      prim_graph.insertVertex(vertex);
     }
-  }
+  // inserts src into queue.
+  //minHeap.insert(Edge(0, 0, 0, 0, true)); 
+  Edge startingEdge = adjacencyLists[0][0];
+  minHeap.insert(startingEdge);
+  // Initialize minHeap with edges connected to the starting vertex (vertex 0)
 
-  //print
+
+
+
+  while (total_edges < vertices.size() && !minHeap.empty()) {
+      // Extract min key value
+      // std::cout << "balls\n";
+      Edge minEdge = minHeap.popMin();
+      int minEdgeSource = minEdge.source;
+      int minEdgeDestination = minEdge.destination;
+
+    
+
+      // Check if both vertices aren't in MST
+      if (!inside[minEdgeSource] || !inside[minEdgeDestination]) {
+
+          // Set both vertices to be in the MST
+          inside[minEdgeSource] = true;
+          inside[minEdgeDestination] = true;
+
+          // Add edge to MST
+          prim_graph.addEdge(vertices[minEdgeSource], vertices[minEdgeDestination], minEdge.distance, minEdge.cost, false, minEdge.considerCost);
+          total_edges++;
+          total_cost += minEdge.cost;
+
+          // Add all edges connected to the destination vertex to the minHeap
+          for (const Edge& edge : adjacencyLists[minEdgeDestination]) {
+              int v = edge.destination;
+              if (!inside[v] && edge.distance < key[v]) {
+                  key[v] = edge.distance;
+                  minHeap.insert(edge);
+              }
+          }
+      }
+  }
+//print
   std::cout << "[Prim's MST]" << std::endl;
   for (int i = 0; i < vertices.size(); ++i) {
     for (const Edge& edge : prim_graph.adjacencyLists[i]) {
@@ -284,7 +288,9 @@ void Graph<T>::Prim_ShortestPath() {
         << edge.cost << ")" << std::endl;
     }
   }
+    std::cout << "Total Cost of MST: " << total_cost << std::endl;
 }
+
 
 template<typename T>
 Graph<T> Graph<T>::kruskalMST() {

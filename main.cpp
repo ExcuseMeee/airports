@@ -6,8 +6,8 @@
 #include "Graph.h"
 #include "Graph.cpp"
 #include "AirportData.h"
-// #include "UnionFind.h"
-// #include "UnionFind.cpp" //REMOVE DEPENDING ON YOUR COMPILER
+#include "UnionFind.h"
+#include "UnionFind.cpp" //REMOVE DEPENDING ON YOUR COMPILER
 
 // should return {srcAirport, destAirport, srcCity, srcState, destCity, destState, distance, cost}
 std::vector<std::string> tokenize(std::string& line, char delimiter = ' ');
@@ -19,7 +19,7 @@ int main() {
 
   // testing to read CSV
   Graph<AirportData> airports;
-  processCSV("airports.csv", airports, true);
+  processCSV("testing.csv", airports, true);
   try
   {
 
@@ -38,8 +38,9 @@ int main() {
     // undirected.print();
     puts("");
     undirected.kruskalMST();
-    // undirected.Prim_ShortestPath();
-
+    puts("");
+    undirected.Prim_ShortestPath();
+    
 
   }
   catch (const std::string& e)
