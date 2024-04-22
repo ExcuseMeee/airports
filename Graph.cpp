@@ -226,24 +226,57 @@ void Graph<T>::cleanVisited() {
 }
 
 template<typename T>
-void Graph<T>::Prim_ShortestPath() {
-  std::vector<int> key(vertices.size(), 2147483647); // key values to pick min weight edge
-  std::vector<bool> inside(vertices.size(), false); // checks if in MST
+Graph<T> Graph<T>::Prim_ShortestPath() {
+    std::vector<int> key(vertices.size(), 2147483647); //key values to pick min weight edge
+    std::vector<bool> inside(vertices.size(), false); //checks if in MST
 
-  //queue to store vertices
-  MinHeap<Edge> minHeap;
-  Graph<T> prim_graph;
-  key[0] = 0;
-  int total_edges = 0;
+    MinHeap<Edge> minHeap;
+    int total_edges = 0;
+    int total_cost = 0;
 
-  // inserts src into queue.
+    key[0] = 0;
+    minHeap.insert(Edge(0, 0, 0, 0, true)); //insert the starting vertex
 
-  // Initialize minHeap with edges connected to the starting vertex (vertex 0)
-  for (const Edge& edge : adjacencyLists[0]) {
-    minHeap.insert(edge);
-  }
+    Graph<T> prim_graph; //create a new graph to represent the MST
 
+    while (total_edges < vertices.size() && !minHeap.empty()) {
+        Edge minEdge = minHeap.popMin();
+        int minEdgeSource = minEdge.source;
+        int minEdgeDestination = minEdge.destination;
 
+        if (!inside[minEdgeSource] || !inside[minEdgeDestination]) {
+            inside[minEdgeSource] = true;
+            inside[minEdgeDestination] = true;
+            total_edges++;
+            total_cost += minEdge.cost;
+
+            prim_graph.insertVertex(vertices[minEdgeSource]);
+            prim_graph.insertVertex(vertices[minEdgeDestination]);
+            prim_graph.addEdge(vertices[minEdgeSource], vertices[minEdgeDestination], minEdge.distance, minEdge.cost, false, minEdge.considerCost);
+
+            for (const Edge& edge : adjacencyLists[minEdgeDestination]) {
+                int v = edge.destination;
+                if (!inside[v] && edge.cost < key[v]) {
+                    key[v] = edge.cost;
+                    minHeap.insert(edge);
+                }
+            }
+        }
+    }
+
+    std::cout << "[Prim's MST]" << std::endl;
+    for (int i = 0; i < prim_graph.vertices.size(); ++i) {
+        for (const Edge& edge : prim_graph.adjacencyLists[i]) {
+            std::cout << "[Prim's MST] " << prim_graph.vertices[edge.source].getData() << " - "
+                << prim_graph.vertices[edge.destination].getData() << " ("
+                << edge.distance << ", "
+                << edge.cost << ")" << std::endl;
+        }
+    }
+    std::cout << "[Prim's MST] Total Edge Cost: " << total_cost << std::endl;
+
+    return prim_graph;
+}
 
   while (!minHeap.empty() || total_edges > vertices.size()) {
     // Extract min key value
