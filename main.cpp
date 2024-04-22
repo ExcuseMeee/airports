@@ -40,7 +40,7 @@ int main() {
     undirected.kruskalMST();
     puts("");
     undirected.Prim_ShortestPath();
-    
+
 
   }
   catch (const std::string& e)
