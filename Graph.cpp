@@ -32,6 +32,7 @@ template<typename T>
 void Graph<T>::addEdge(const Vertex<T>& origin, const Vertex<T>& dest, int distance, int cost, bool directed, bool considerCost) {
   int origin_ind = getVertexIndex(origin);
   int dest_ind = getVertexIndex(dest);
+  
   if (origin_ind == -1 || dest_ind == -1) throw std::string("[addEdge] invalid edges");
 
   adjacencyLists[origin_ind].push_back(Edge(origin_ind, dest_ind, distance, cost, considerCost));
@@ -104,7 +105,7 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
 
   cleanVisited();
 
-  std::cout << "Shortest path " << src.getData() << " to " << dest.getData() << ": ";
+  std::cout << "[findShortestPath] ";
   //printing path and distance/cost
   if (distances[dest_ind] == 2147483647) {
     std::cout << "Unreachable" << std::endl;
@@ -121,12 +122,13 @@ void Graph<T>::findShortestPath(const Vertex<T>& src, const Vertex<T>& dest) {
 
     while (!st.empty()) {
       int i = st.top();
-      std::cout << vertices[i].getData();
+      std::cout << vertices[i].getData() << "->";
       st.pop();
-      if (!st.empty()) std::cout << "->";
     }
+    std::cout << "(end) ";
 
-    std::cout << " (Distance: " << distances.at(dest_ind) << ", " << "Cost: " << costs.at(dest_ind) << ")" << std::endl;
+
+    std::cout << "Distance: " << distances.at(dest_ind) << ", " << "Cost: " << costs.at(dest_ind) << std::endl;
 
   }
 
@@ -137,79 +139,81 @@ template<typename T>
 void Graph<T>::shortestPathsToState(const Vertex<T>& origin, std::string dest_state) {
   //find all destination airports for the state
   bool pathPresent = false;
-  std::cout << "Shortest Paths to " << dest_state << " airports from " << origin.getData() << std::endl;
   for (const Vertex<T>& vertex : vertices) { //adds vertices to graph
+    if (pathPresent == false) {
+      std::cout << "Shortest Paths to " << dest_state << std::endl;
+    }
     AirportData vertexAirportData = vertex.getData();
     if (dest_state == vertexAirportData.stateCode) {
-      findShortestPath(origin, vertex); // NOTE: shortest path depends on whether the edge considers cost or distance
+      findShortestPath(origin, vertex); //this is the error
       pathPresent = true;
     }
-  }
+}
   if (pathPresent == false) {
     std::cout << "[shortestPathstoState] There are no valid paths" << std::endl;
   }
 }
 
 template<typename T>
-void Graph<T>::shortestPathsWithStops(const Vertex<T>& origin, const Vertex<T>& dest, int stops) {
-  std::cout << "[Shortest Paths with " << stops << " Stops] " << origin.getData() << " to " << dest.getData() << std::endl;
-  // Find the index of the destination vertex
-  int destIndex = getVertexIndex(dest);
+void Graph<T>::shortestPathsWithStops(const Vertex<T>& origin, const Vertex<T>& dest, int stops){
+  std::cout << "[Shortest Paths with " << stops << " Stops]: " << std::endl;
+    // Find the index of the destination vertex
+    int destIndex = getVertexIndex(dest);
 
-  // If the destination vertex doesn't exist, return
-  if (destIndex == -1) {
-    std::cout << "[SPWS]Destination vertex not found" << std::endl;
-    return;
-  }
-
-  // Perform DFS starting from the origin vertex
-  Stack<std::vector<int>> dfsStack;
-  std::vector<int> initialPath = { getVertexIndex(origin) };
-  dfsStack.push(initialPath);
-  int shortestDistance = 2147483647;
-  int shortestCost = 0;
-  std::vector<int> shortestPath;
-
-
-  while (!dfsStack.empty()) {
-    std::vector<int> currentPath = dfsStack.top();
-    dfsStack.pop();
-
-    int currentVertexIndex = currentPath.back();
-    if (currentPath.size() - 2 == stops && currentVertexIndex == destIndex) {
-      // Found a path with the specified number of stops
-      int totalDistance = 0;
-      int totalCost = 0;
-      for (int i = 0; i < currentPath.size() - 1; ++i) {
-        int srcIndex = currentPath[i];
-        int destIndex = currentPath[i + 1];
-        for (const Edge& edge : adjacencyLists[srcIndex]) {
-          if (edge.destination == destIndex) {
-            totalDistance += edge.distance;
-            totalCost += edge.cost;
-            break;
-          }
-        }
-      }
-      if (totalDistance < shortestDistance) {
-        shortestDistance = totalDistance;
-        shortestCost = totalCost;
-        shortestPath = currentPath;
-      }
+    // If the destination vertex doesn't exist, return
+    if (destIndex == -1) {
+        std::cout << "[SPWS]Destination vertex not found" << std::endl;
+        return;
     }
 
-    // If num of stop > stops needed, skip
+    // Perform DFS starting from the origin vertex
+    Stack<std::vector<int>> dfsStack;
+    std::vector<int> initialPath = {getVertexIndex(origin)};
+    dfsStack.push(initialPath);
+    int shortestDistance = 2147483647;
+    int shortestCost = 0;
+    std::vector<int> shortestPath;
+
+  
+    while (!dfsStack.empty()) {
+      std::vector<int> currentPath = dfsStack.top();
+      dfsStack.pop();
+
+      int currentVertexIndex = currentPath.back();
+      if (currentPath.size() - 1 == stops && currentVertexIndex == destIndex) {
+          // Found a path with the specified number of stops
+        int totalDistance = 0;
+        int totalCost = 0;
+        for (int i = 0; i < currentPath.size() - 1; ++i) {
+          int srcIndex = currentPath[i];
+          int destIndex = currentPath[i + 1];
+          for (const Edge& edge : adjacencyLists[srcIndex]) {
+            if (edge.destination == destIndex) {
+                totalDistance += edge.distance;
+                totalCost += edge.cost;
+                break;
+            }
+          }
+        }
+        if (totalDistance < shortestDistance) {
+          shortestDistance = totalDistance;
+          shortestCost = totalCost;
+          shortestPath = currentPath;
+        }
+    }
+
+      // If num of stop > stops needed, skip
     if (currentPath.size() - 1 > stops) {
-      continue;
+        continue;
     }
 
     // Explore neighbors
     for (const Edge& edge : adjacencyLists[currentVertexIndex]) {
-      std::vector<int> newPath = currentPath;
-      newPath.push_back(edge.destination);
-      dfsStack.push(newPath);
+        std::vector<int> newPath = currentPath;
+        newPath.push_back(edge.destination);
+        dfsStack.push(newPath);
     }
-
+      
   }
   for (int i = 0; i < shortestPath.size() - 1; ++i) {
     std::cout << vertices[shortestPath[i]].getData() << " -> ";
@@ -228,17 +232,17 @@ void Graph<T>::cleanVisited() {
 
 template<typename T>
 Graph<T> Graph<T>::Prim_ShortestPath() {
-    std::vector<int> key(vertices.size(), 2147483647); //key values to pick min weight edge
-    std::vector<bool> inside(vertices.size(), false); //checks if in MST
+    std::vector<int> key(vertices.size(), 2147483647); // key values to pick min weight edge
+    std::vector<bool> inside(vertices.size(), false); // checks if in MST
 
     MinHeap<Edge> minHeap;
     int total_edges = 0;
     int total_cost = 0;
 
     key[0] = 0;
-    minHeap.insert(Edge(0, 0, 0, 0, true)); //insert the starting vertex
+    minHeap.insert(Edge(0, 0, 0, 0, true)); // Insert the starting vertex
 
-    Graph<T> prim_graph; //create a new graph to represent the MST
+    Graph<T> prim_graph; // Create a new graph to represent the MST
 
     while (total_edges < vertices.size() && !minHeap.empty()) {
         Edge minEdge = minHeap.popMin();
@@ -254,12 +258,7 @@ Graph<T> Graph<T>::Prim_ShortestPath() {
             prim_graph.insertVertex(vertices[minEdgeSource]);
             prim_graph.insertVertex(vertices[minEdgeDestination]);
             prim_graph.addEdge(vertices[minEdgeSource], vertices[minEdgeDestination], minEdge.distance, minEdge.cost, false, minEdge.considerCost);
-
-            std::cout << "[Prim's MST] " << vertices[minEdgeSource].getData() << " - "
-                      << vertices[minEdgeDestination].getData() << " ("
-                      << minEdge.distance << ", "
-                      << minEdge.cost << ")" << std::endl;
-
+          std::cout << "[Prim's MST] " << vertices[minEdgeSource].getData() << " - " << vertices[minEdgeDestination].getData() << " (" << minEdge.distance << ", " << minEdge.cost << ")" << std::endl;
             for (const Edge& edge : adjacencyLists[minEdgeDestination]) {
                 int v = edge.destination;
                 if (!inside[v] && edge.cost < key[v]) {
@@ -269,11 +268,12 @@ Graph<T> Graph<T>::Prim_ShortestPath() {
             }
         }
     }
-    
     std::cout << "[Prim's MST] Total Edge Cost: " << total_cost << std::endl;
 
     return prim_graph;
 }
+
+
 
 template<typename T>
 Graph<T> Graph<T>::kruskalMST() {
@@ -315,7 +315,7 @@ Graph<T> Graph<T>::kruskalMST() {
     std::cout << edge.cost << ")" << std::endl;
   }
 
-  std::cout << "[Kruskal MST] Total Edge Cost " << total_edge_cost << std::endl;
+  std::cout << "[Kruskal MST] Total Edge Cost: " << total_edge_cost << std::endl;
 
   return Kruskal_MST_Graph;
 }
