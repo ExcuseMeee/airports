@@ -6,13 +6,12 @@
 #include "Graph.h"
 #include "Graph.cpp"
 #include "AirportData.h"
-#include "UnionFind.h"
-#include "UnionFind.cpp"
+// #include "UnionFind.h"
+// #include "UnionFind.cpp" //REMOVE DEPENDING ON YOUR COMPILER
+
 // should return {srcAirport, destAirport, srcCity, srcState, destCity, destState, distance, cost}
 std::vector<std::string> tokenize(std::string& line, char delimiter = ' ');
-
 void addAirportEdge(const std::vector<std::string>& tokens, Graph<AirportData>& airports);
-
 void processCSV(std::string filename, Graph<AirportData>& airports, bool skipFirst);
 
 
@@ -20,27 +19,27 @@ int main() {
 
   // testing to read CSV
   Graph<AirportData> airports;
-  processCSV("testing.csv", airports, true);
+  processCSV("airports.csv", airports, true);
   try
   {
 
     // airports.print();
-    airports.findShortestPath(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")));
-    // airports.directConnections();
-
+    puts("");
+    airports.findShortestPath(Vertex<AirportData>(AirportData("ABE", "Allentown", "PA")), Vertex<AirportData>(AirportData("EWR", "Newark", "NJ")));
+    puts("");
+    airports.shortestPathsToState(Vertex<AirportData>(AirportData("ABE", "Allentown", "PA")), std::string("NJ"));
+    puts("");
+    airports.directConnections();
+    puts("");
+    airports.shortestPathsWithStops(Vertex<AirportData>(AirportData("ABE", "Allentown", "PA")), Vertex<AirportData>(AirportData("EWR", "Newark", "NJ")), 2);
     puts("");
 
     Graph<AirportData> undirected = airports.createUndirected(); // undirected graph considers COST by default
     // undirected.print();
-    undirected.findShortestPath(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")));
-    // undirected.kruskalMST();
-
-    // Graph<AirportData> krusk = undirected.kruskalMST();
-    // krusk.print();
-
+    puts("");
+    undirected.kruskalMST();
     // undirected.Prim_ShortestPath();
-    // undirected.shortestPathsToState(Vertex<AirportData>(AirportData("A", "Src", "FL")), std::string("FL"));
-    undirected.shortestPathsWithStops(Vertex<AirportData>(AirportData("A", "Src", "FL")), Vertex<AirportData>(AirportData("E", "Src", "FL")), 2);
+
 
   }
   catch (const std::string& e)
@@ -63,8 +62,8 @@ std::vector<std::string> tokenize(std::string& line, char delimiter) {
   std::string token;
   while (std::getline(iss, token, delimiter)) {
     // strip token of leading/trailing whitespace and quotes
-    if (token.front() == ' ' || token.front() == '"') token.erase(0, 1);
-    if (token.back() == ' ' || token.back() == '"') token.erase(token.size() - 1, 1);
+    while (token.front() == ' ' || token.front() == '"') token.erase(0, 1);
+    while (token.back() == ' ' || token.back() == '"') token.erase(token.size() - 1, 1);
 
     if (!token.empty()) tokens.push_back(token);
   }
@@ -87,6 +86,7 @@ void addAirportEdge(const std::vector<std::string>& tokens, Graph<AirportData>& 
   airports.addEdge(srcVertex, destVertex, std::stoi(tokens.at(6)), std::stoi(tokens.at(7)));
 
 }
+
 
 void processCSV(std::string filename, Graph<AirportData>& airports, bool skipFirst) {
   std::ifstream inFile(filename);
