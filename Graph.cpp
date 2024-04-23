@@ -232,11 +232,11 @@ Graph<T> Graph<T>::Prim_ShortestPath() {
   std::vector<int> key(vertices.size(), 2147483647); // key values to pick min weight edge
   std::vector<bool> inside(vertices.size(), false); // checks if in MST
 
-  MinHeap<Edge> minHeap;
-  int total_edges = 0;
-  int total_cost = 0;
+  MinHeap<Edge> minHeap; // Store edges
+  int total_edges = 0; 
+  int total_cost = 0; // Store total cost
 
-  key[0] = 0;
+  key[0] = 0; // Sets the starting key as 0
   minHeap.insert(Edge(0, 0, 0, 0, true)); // Insert the starting vertex
 
   Graph<T> prim_graph; // Create a new graph to represent the MST
@@ -251,12 +251,12 @@ Graph<T> Graph<T>::Prim_ShortestPath() {
       inside[minEdgeDestination] = true;
       total_edges++;
       total_cost += minEdge.cost;
-
+      // Creates a vertex to add the edge.
       prim_graph.insertVertex(vertices[minEdgeSource]);
       prim_graph.insertVertex(vertices[minEdgeDestination]);
       prim_graph.addEdge(vertices[minEdgeSource], vertices[minEdgeDestination], minEdge.distance, minEdge.cost, false, minEdge.considerCost);
       std::cout << "[Prim's MST] " << vertices[minEdgeSource].getData() << " - " << vertices[minEdgeDestination].getData() << " (" << minEdge.distance << ", " << minEdge.cost << ")" << std::endl;
-      for (const Edge& edge : adjacencyLists[minEdgeDestination]) {
+      for (const Edge& edge : adjacencyLists[minEdgeDestination]) { // Checks adjacent edge.
         int v = edge.destination;
         if (!inside[v] && edge.cost < key[v]) {
           key[v] = edge.cost;
